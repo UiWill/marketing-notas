@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "WebFetch(domain:dnotas.com.br)",
+      "Read(//c/ERP_SISTEMAS/COMPRAR BEM/**)",
+      "WebFetch(domain:modelopaginadnotas.my.canva.site)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(npm install:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
