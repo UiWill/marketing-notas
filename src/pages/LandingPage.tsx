@@ -5,11 +5,17 @@ import { VideoPlayer } from '@/components/VideoPlayer'
 import { LeadForm } from '@/components/LeadForm'
 import { ScrollAnimation } from '@/components/ScrollAnimation'
 import { trackPageView } from '@/utils/analytics'
+import { usePageTracking } from '@/hooks/usePageTracking'
 
 export const LandingPage = () => {
-  const [leadId, setLeadId] = useState<string | null>(null)
+  const [leadId, setLeadId] = useState<string | undefined>(undefined)
   const [showContent, setShowContent] = useState(false)
-  const [currentVideoTime, setCurrentVideoTime] = useState(0)
+
+  // Page tracking com visitantes anônimos
+  const { updatePageView, trackEvent } = usePageTracking({
+    trackScroll: true,
+    trackTimeOnPage: true,
+  })
 
   useEffect(() => {
     trackPageView('/')
@@ -18,14 +24,23 @@ export const LandingPage = () => {
   const handleLeadSubmit = (id: string) => {
     setLeadId(id)
     setShowContent(true)
+    // Track form completion
+    updatePageView({ completed_form: true })
+    trackEvent('form_submitted', { lead_id: id })
   }
 
   const handleVideoTimeUpdate = (time: number) => {
-    setCurrentVideoTime(time)
-    // Show content and CTA immediately when video starts (minute 0)
-    // As specified in PDF: "o botão precisa aparecer no minuto: 00 após o lead dar o play no vídeo"
-    if (time >= 0 && !showContent) {
+    // Show content and CTA at 11:27 (687 seconds)
+    // Track video start only once
+    if (time >= 1 && time < 5 && !showContent) {
+      updatePageView({ started_video: true })
+      trackEvent('video_started')
+    }
+
+    // Show CTA button at 11:27
+    if (time >= 687 && !showContent) {
       setShowContent(true)
+      trackEvent('cta_unlocked', { timestamp: 687 })
     }
   }
 
@@ -52,10 +67,10 @@ export const LandingPage = () => {
       <section className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <VideoPlayer
-            url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder - replace with actual video
+            url="/videos/marketing-video.mp4"
             leadId={leadId}
             onTimeUpdate={handleVideoTimeUpdate}
-            showControlsAfter={0} // Show controls immediately as specified in PDF
+            showControlsAfter={687} // Show controls at 11:27 (687 seconds)
             className="aspect-video w-full"
           />
         </div>

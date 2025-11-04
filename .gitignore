@@ -53,3 +53,11 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# Large video files
+public/videos/*.mp4
+public/videos/*.mov
+public/videos/*.avi
+referencia/*.mp4
+referencia/*.mov
+referencia/*.avi

@@ -94,6 +94,13 @@ export const VideoPlayer = ({
         height="100%"
         controls={false}
         config={{
+          file: {
+            attributes: {
+              controlsList: 'nodownload nofullscreen noremoteplayback',
+              disablePictureInPicture: true,
+              onContextMenu: (e: Event) => e.preventDefault(),
+            }
+          },
           youtube: {
             playerVars: {
               disablekb: 1,

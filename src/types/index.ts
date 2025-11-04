@@ -47,4 +47,26 @@ export interface AnalyticsData {
   topDropOffPoints: number[]
   leadsBySource: Record<string, number>
   revenueBySegment: Record<string, number>
+  totalVisitors?: number
+  videoStartRate?: number
+  ctaClickRate?: number
+  formCompletionRate?: number
+}
+
+export interface ConversionFunnel {
+  total_visitors: number
+  video_started: number
+  cta_clicked: number
+  form_submitted: number
+  converted: number
+}
+
+export interface TrafficSource {
+  source: string
+  medium: string
+  campaign: string
+  sessions: number
+  pageviews: number
+  video_starts: number
+  conversions: number
 }

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Users, TrendingUp, PlayCircle, Target, Eye, Clock, Phone, Mail, DollarSign } from 'lucide-react'
-import type { Lead, AnalyticsData } from '@/types'
+import { Users, TrendingUp, PlayCircle, Target, Eye, Clock, Phone, Mail, DollarSign, MousePointer, FileCheck, Globe } from 'lucide-react'
+import type { Lead, AnalyticsData, ConversionFunnel, TrafficSource } from '@/types'
 
 export const Dashboard = () => {
   const [leads, setLeads] = useState<Lead[]>([])
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
+  const [conversionFunnel, setConversionFunnel] = useState<ConversionFunnel | null>(null)
+  const [trafficSources, setTrafficSources] = useState<TrafficSource[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
 
@@ -15,6 +17,7 @@ export const Dashboard = () => {
 
   const fetchData = async () => {
     try {
+      // Fetch leads
       const { data: leadsData, error: leadsError } = await supabase
         .from('leads')
         .select('*')
@@ -24,9 +27,28 @@ export const Dashboard = () => {
 
       setLeads(leadsData || [])
 
+      // Fetch conversion funnel
+      const { data: funnelData, error: funnelError } = await supabase
+        .from('conversion_funnel')
+        .select('*')
+        .single()
+
+      if (!funnelError && funnelData) {
+        setConversionFunnel(funnelData)
+      }
+
+      // Fetch traffic sources
+      const { data: trafficData, error: trafficError } = await supabase
+        .from('traffic_sources')
+        .select('*')
+        .limit(10)
+
+      if (!trafficError && trafficData) {
+        setTrafficSources(trafficData)
+      }
+
       // Calculate analytics
       const totalLeads = leadsData?.length || 0
-      const completedVideos = leadsData?.filter(lead => lead.video_completed).length || 0
       const conversions = leadsData?.filter(lead => lead.conversion_stage === 'converted').length || 0
 
       const avgCompletion = totalLeads > 0
@@ -46,6 +68,18 @@ export const Dashboard = () => {
         return acc
       }, {} as Record<string, number>) || {}
 
+      // Calculate visitor metrics
+      const totalVisitors = funnelData?.total_visitors || 0
+      const videoStartRate = totalVisitors > 0
+        ? ((funnelData?.video_started || 0) / totalVisitors) * 100
+        : 0
+      const ctaClickRate = totalVisitors > 0
+        ? ((funnelData?.cta_clicked || 0) / totalVisitors) * 100
+        : 0
+      const formCompletionRate = totalVisitors > 0
+        ? ((funnelData?.form_submitted || 0) / totalVisitors) * 100
+        : 0
+
       setAnalytics({
         totalLeads,
         conversionRate: totalLeads > 0 ? (conversions / totalLeads) * 100 : 0,
@@ -53,6 +87,10 @@ export const Dashboard = () => {
         topDropOffPoints: [], // Would need video events data
         leadsBySource: sourceCount,
         revenueBySegment,
+        totalVisitors,
+        videoStartRate,
+        ctaClickRate,
+        formCompletionRate,
       })
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
@@ -118,6 +156,51 @@ export const Dashboard = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Visitor Metrics - New Row */}
+        {analytics && analytics.totalVisitors && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow p-6 text-white">
+              <div className="flex items-center">
+                <Globe className="h-8 w-8 opacity-80" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium opacity-90">Visitantes Únicos</p>
+                  <p className="text-2xl font-bold">{analytics.totalVisitors}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow p-6 text-white">
+              <div className="flex items-center">
+                <PlayCircle className="h-8 w-8 opacity-80" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium opacity-90">Taxa de Visualização do Vídeo</p>
+                  <p className="text-2xl font-bold">{analytics.videoStartRate?.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow p-6 text-white">
+              <div className="flex items-center">
+                <MousePointer className="h-8 w-8 opacity-80" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium opacity-90">Taxa de Clique no CTA</p>
+                  <p className="text-2xl font-bold">{analytics.ctaClickRate?.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow p-6 text-white">
+              <div className="flex items-center">
+                <FileCheck className="h-8 w-8 opacity-80" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium opacity-90">Taxa de Conversão de Formulário</p>
+                  <p className="text-2xl font-bold">{analytics.formCompletionRate?.toFixed(1)}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Analytics Cards */}
         {analytics && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -165,8 +248,125 @@ export const Dashboard = () => {
           </div>
         )}
 
+        {/* Conversion Funnel */}
+        {conversionFunnel && (
+          <div className="bg-white rounded-lg shadow p-6 mb-8">
+            <h3 className="text-lg font-medium text-gray-900 mb-6">Funil de Conversão</h3>
+            <div className="space-y-4">
+              {/* Visitors */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-700 font-medium">Visitantes Únicos</span>
+                  <span className="text-gray-900 font-bold">{conversionFunnel.total_visitors}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-8">
+                  <div className="bg-blue-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium" style={{ width: '100%' }}>
+                    100%
+                  </div>
+                </div>
+              </div>
+
+              {/* Video Started */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-700 font-medium">Iniciaram o Vídeo</span>
+                  <span className="text-gray-900 font-bold">{conversionFunnel.video_started}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-8">
+                  <div
+                    className="bg-purple-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                    style={{ width: `${(conversionFunnel.video_started / conversionFunnel.total_visitors) * 100}%` }}
+                  >
+                    {((conversionFunnel.video_started / conversionFunnel.total_visitors) * 100).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA Clicked */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-700 font-medium">Clicaram no CTA</span>
+                  <span className="text-gray-900 font-bold">{conversionFunnel.cta_clicked}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-8">
+                  <div
+                    className="bg-orange-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                    style={{ width: `${(conversionFunnel.cta_clicked / conversionFunnel.total_visitors) * 100}%` }}
+                  >
+                    {((conversionFunnel.cta_clicked / conversionFunnel.total_visitors) * 100).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Submitted */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-700 font-medium">Preencheram o Formulário</span>
+                  <span className="text-gray-900 font-bold">{conversionFunnel.form_submitted}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-8">
+                  <div
+                    className="bg-green-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                    style={{ width: `${(conversionFunnel.form_submitted / conversionFunnel.total_visitors) * 100}%` }}
+                  >
+                    {((conversionFunnel.form_submitted / conversionFunnel.total_visitors) * 100).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+
+              {/* Converted */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-700 font-medium">Converteram</span>
+                  <span className="text-gray-900 font-bold">{conversionFunnel.converted}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-8">
+                  <div
+                    className="bg-emerald-600 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                    style={{ width: `${(conversionFunnel.converted / conversionFunnel.total_visitors) * 100}%` }}
+                  >
+                    {((conversionFunnel.converted / conversionFunnel.total_visitors) * 100).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Traffic Sources */}
+          {trafficSources.length > 0 && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Fontes de Tráfego</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left text-xs font-medium text-gray-500 uppercase py-2">Fonte</th>
+                      <th className="text-right text-xs font-medium text-gray-500 uppercase py-2">Sessões</th>
+                      <th className="text-right text-xs font-medium text-gray-500 uppercase py-2">Conv.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {trafficSources.map((source, index) => (
+                      <tr key={index} className="border-b">
+                        <td className="py-3">
+                          <div>
+                            <div className="font-medium text-gray-900">{source.source}</div>
+                            <div className="text-xs text-gray-500">{source.medium} / {source.campaign}</div>
+                          </div>
+                        </td>
+                        <td className="text-right font-semibold text-gray-900">{source.sessions}</td>
+                        <td className="text-right font-semibold text-green-600">{source.conversions}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
           {/* Leads by Source */}
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Leads por Fonte</h3>

@@ -1,6 +1,5 @@
 import { useCallback, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
-import { trackVideoEvent } from '@/utils/analytics'
 
 interface UseVideoTrackingProps {
   leadId?: string
