@@ -4,7 +4,7 @@ import { Dashboard } from '@/pages/Dashboard'
 
 function App() {
   return (
-    <Router>
+    <Router basename="/marketing-notas">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
