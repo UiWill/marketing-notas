@@ -17,7 +17,8 @@
       "Bash(npm run build:*)",
       "Bash(git rm:*)",
       "Bash(git reset:*)",
-      "Bash(del \"C:\\ERP_SISTEMAS\\Landepage ELI\\public\\videos\\marketing-video.mp4\")"
+      "Bash(del \"C:\\ERP_SISTEMAS\\Landepage ELI\\public\\videos\\marketing-video.mp4\")",
+      "Bash(del publicCNAME)"
     ],
     "deny": [],
     "ask": []
