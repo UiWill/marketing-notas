@@ -67,7 +67,7 @@ export const LandingPage = () => {
       <section className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <VideoPlayer
-            url="https://drive.google.com/uc?export=download&id=1VO1OYzzU2n_TsXqShp0pvBhECvELsYd1"
+            url="https://www.youtube.com/watch?v=vmmBD2Rxb9M"
             leadId={leadId}
             onTimeUpdate={handleVideoTimeUpdate}
             showControlsAfter={687} // Show controls at 11:27 (687 seconds)
