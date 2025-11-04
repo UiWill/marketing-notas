@@ -76,16 +76,17 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Button - Shows immediately, content below shows after video timing */}
-      <section className="container mx-auto px-4 py-8">
-        <LeadForm
-          onSubmitSuccess={handleLeadSubmit}
-          className="max-w-lg mx-auto"
-        />
-      </section>
-
-      {/* Content that appears after button click or video timing */}
+      {/* CTA Button and Content - Only appears at 11:27 */}
       {showContent && (
+        <>
+          <section className="container mx-auto px-4 py-8">
+            <LeadForm
+              onSubmitSuccess={handleLeadSubmit}
+              className="max-w-lg mx-auto"
+            />
+          </section>
+
+          {/* Additional content after CTA */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -640,6 +641,7 @@ export const LandingPage = () => {
             </ScrollAnimation>
           </section>
         </motion.div>
+        </>
       )}
 
       {/* Footer */}
