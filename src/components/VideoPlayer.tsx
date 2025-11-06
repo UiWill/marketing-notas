@@ -136,22 +136,10 @@ export const VideoPlayer = ({
         />
       )}
 
-      {/* Custom Controls */}
+      {/* Custom Controls - Apenas visualização, sem controle de play/pause */}
       {showControls && (
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
           <div className="flex items-center gap-4">
-            <button
-              onClick={handlePlayPause}
-              className="flex items-center justify-center w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
-              aria-label={playing ? 'Pausar' : 'Reproduzir'}
-            >
-              {playing ? (
-                <Pause className="w-6 h-6 text-white" />
-              ) : (
-                <Play className="w-6 h-6 text-white ml-1" />
-              )}
-            </button>
-
             <div className="flex-1 flex items-center gap-2 text-white text-sm">
               <span>{formatTime(currentTime)}</span>
               <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
@@ -163,19 +151,6 @@ export const VideoPlayer = ({
               <span>{formatTime(duration)}</span>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Play overlay when paused */}
-      {!playing && showControls && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-          <button
-            onClick={handlePlayPause}
-            className="flex items-center justify-center w-20 h-20 bg-accent-500 hover:bg-accent-600 rounded-full transition-colors shadow-lg"
-            aria-label="Reproduzir vídeo"
-          >
-            <Play className="w-8 h-8 text-white ml-1" />
-          </button>
         </div>
       )}
     </div>
