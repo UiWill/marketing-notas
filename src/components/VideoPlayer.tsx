@@ -17,10 +17,10 @@ export const VideoPlayer = ({
   leadId,
   onTimeUpdate,
   showControlsAfter = 0,
-  autoPlay = false,
+  autoPlay = true, // Changed default to true
   className = ''
 }: VideoPlayerProps) => {
-  const [playing, setPlaying] = useState(autoPlay)
+  const [playing, setPlaying] = useState(true) // Start playing automatically
   const [played, setPlayed] = useState(0)
   const [duration, setDuration] = useState(0)
   const [showControls, setShowControls] = useState(showControlsAfter === 0)
@@ -108,6 +108,8 @@ export const VideoPlayer = ({
               modestbranding: 1,
               rel: 0,
               showinfo: 0,
+              autoplay: 1,
+              fs: 0,
             }
           },
           vimeo: {
@@ -116,10 +118,23 @@ export const VideoPlayer = ({
               title: false,
               byline: false,
               portrait: false,
+              autoplay: true,
             }
           }
         }}
       />
+
+      {/* Camada invisível que bloqueia o mouse até liberar os controles */}
+      {!showControls && (
+        <div
+          className="absolute inset-0 z-10 cursor-default"
+          style={{ background: 'transparent' }}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => e.preventDefault()}
+          onDoubleClick={(e) => e.preventDefault()}
+          onContextMenu={(e) => e.preventDefault()}
+        />
+      )}
 
       {/* Custom Controls */}
       {showControls && (

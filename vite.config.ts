@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/marketing-notas/',
+  base: '/', // Changed to root because we're using custom domain
   resolve: {
     alias: {
       '@': '/src',
