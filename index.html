@@ -60,9 +60,12 @@
           var decoded = l.search.slice(1).split('&').map(function(s) {
             return s.replace(/~and~/g, '&')
           }).join('?');
-          window.history.replaceState(null, null,
-              l.pathname.slice(0, -1) + decoded + l.hash
-          );
+          var newPath = l.pathname.slice(0, -1) + decoded + l.hash;
+          window.history.replaceState(null, null, newPath);
+          // Force a reload to ensure React Router picks up the new path
+          if (decoded && decoded !== '/') {
+            window.location.replace(newPath);
+          }
         }
       }(window.location))
     </script>
