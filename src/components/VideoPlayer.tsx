@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import ReactPlayer from 'react-player'
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
+import { Play, Pause } from 'lucide-react'
 import { useVideoTracking } from '@/hooks/useVideoTracking'
 
 interface VideoPlayerProps {
@@ -25,8 +25,6 @@ export const VideoPlayer = ({
   const [duration, setDuration] = useState(0)
   const [showControls, setShowControls] = useState(showControlsAfter === 0)
   const [currentTime, setCurrentTime] = useState(0)
-  const [muted, setMuted] = useState(true) // Start muted for autoplay
-  const [showUnmuteButton, setShowUnmuteButton] = useState(true)
 
   const playerRef = useRef<ReactPlayer>(null)
   const { updateProgress, handlePlay, handlePause, handleEnded, handleDrop } = useVideoTracking({ leadId })
@@ -42,11 +40,6 @@ export const VideoPlayer = ({
       return newPlaying
     })
   }, [handlePlay, handlePause])
-
-  const handleUnmute = useCallback(() => {
-    setMuted(false)
-    setShowUnmuteButton(false)
-  }, [])
 
   const handleProgress = useCallback((state: { played: number; playedSeconds: number }) => {
     setPlayed(state.played)
@@ -94,7 +87,6 @@ export const VideoPlayer = ({
         ref={playerRef}
         url={url}
         playing={playing}
-        muted={muted}
         onProgress={handleProgress}
         onDuration={handleDuration}
         onEnded={handleEnding}
@@ -117,7 +109,6 @@ export const VideoPlayer = ({
               rel: 0,
               showinfo: 0,
               autoplay: 1,
-              mute: 1,
               fs: 0,
             }
           },
@@ -143,20 +134,6 @@ export const VideoPlayer = ({
           onDoubleClick={(e) => e.preventDefault()}
           onContextMenu={(e) => e.preventDefault()}
         />
-      )}
-
-      {/* Unmute Button */}
-      {showUnmuteButton && muted && (
-        <div className="absolute top-4 right-4 z-20">
-          <button
-            onClick={handleUnmute}
-            className="flex items-center gap-2 px-4 py-3 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
-            aria-label="Ativar som"
-          >
-            <VolumeX className="w-5 h-5 text-gray-900" />
-            <span className="text-sm font-medium text-gray-900">Ativar Som</span>
-          </button>
-        </div>
       )}
 
       {/* Custom Controls */}
