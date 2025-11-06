@@ -149,8 +149,8 @@ export const VideoPlayer = ({
         </div>
       )}
 
-      {/* Camada invisível que bloqueia o mouse até liberar os controles */}
-      {hasStarted && !showControls && (
+      {/* Camada invisível que bloqueia SEMPRE o mouse no vídeo */}
+      {hasStarted && (
         <div
           className="absolute inset-0 z-10 cursor-default"
           style={{ background: 'transparent' }}
@@ -163,7 +163,7 @@ export const VideoPlayer = ({
 
       {/* Custom Controls - Apenas visualização, sem controle de play/pause */}
       {showControls && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pointer-events-none">
           <div className="flex items-center gap-4">
             <div className="flex-1 flex items-center gap-2 text-white text-sm">
               <span>{formatTime(currentTime)}</span>
