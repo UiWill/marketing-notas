@@ -163,7 +163,7 @@ export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => 
             <input
               {...register('revenue', {
                 required: 'Faturamento é obrigatório',
-                min: { value: 7000, message: 'Faturamento deve ser pelo menos R$ 7.000' }
+                min: { value: 0.01, message: 'Faturamento deve ser maior que zero' }
               })}
               type="text"
               id="revenue"

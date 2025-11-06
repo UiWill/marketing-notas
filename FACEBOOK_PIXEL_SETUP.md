@@ -96,7 +96,7 @@ https://business.facebook.com/events_manager
 ## ✅ O que você precisa me enviar:
 
 ```
-ID DO PIXEL: 123456789012345
+ID DO PIXEL: 123456789012345 (exemplo)
 ```
 
 **Formato:** 15 dígitos (apenas números)
