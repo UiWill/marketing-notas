@@ -21,7 +21,8 @@
       "Bash(del publicCNAME)",
       "Bash(npx supabase functions deploy:*)",
       "Bash(npx supabase link:*)",
-      "Bash(.gitignore)"
+      "Bash(.gitignore)",
+      "Bash(del:*)"
     ],
     "deny": [],
     "ask": []
