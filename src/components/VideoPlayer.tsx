@@ -20,7 +20,8 @@ export const VideoPlayer = ({
   autoPlay = true, // Changed default to true
   className = ''
 }: VideoPlayerProps) => {
-  const [playing, setPlaying] = useState(true) // Start playing automatically
+  const [hasStarted, setHasStarted] = useState(false) // Track if user clicked play
+  const [playing, setPlaying] = useState(false) // Start paused, waiting for user click
   const [played, setPlayed] = useState(0)
   const [duration, setDuration] = useState(0)
   const [showControls, setShowControls] = useState(showControlsAfter === 0)
@@ -28,6 +29,12 @@ export const VideoPlayer = ({
 
   const playerRef = useRef<ReactPlayer>(null)
   const { updateProgress, handlePlay, handlePause, handleEnded, handleDrop } = useVideoTracking({ leadId })
+
+  const handleInitialPlay = useCallback(() => {
+    setHasStarted(true)
+    setPlaying(true)
+    handlePlay()
+  }, [handlePlay])
 
   const handlePlayPause = useCallback(() => {
     setPlaying(prev => {
@@ -124,8 +131,26 @@ export const VideoPlayer = ({
         }}
       />
 
+      {/* Overlay inicial com botão de Play */}
+      {!hasStarted && (
+        <div className="absolute inset-0 z-20 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+          <button
+            onClick={handleInitialPlay}
+            className="group flex flex-col items-center gap-4 transition-transform hover:scale-110"
+            aria-label="Iniciar vídeo"
+          >
+            <div className="flex items-center justify-center w-24 h-24 bg-accent-500 hover:bg-accent-600 rounded-full shadow-2xl transition-all duration-300">
+              <Play className="w-12 h-12 text-white ml-2" />
+            </div>
+            <span className="text-white text-lg font-semibold opacity-90 group-hover:opacity-100 transition-opacity">
+              Clique para Assistir
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* Camada invisível que bloqueia o mouse até liberar os controles */}
-      {!showControls && (
+      {hasStarted && !showControls && (
         <div
           className="absolute inset-0 z-10 cursor-default"
           style={{ background: 'transparent' }}
