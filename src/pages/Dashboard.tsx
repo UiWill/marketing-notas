@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Users, TrendingUp, PlayCircle, Target, Eye, Clock, Phone, Mail, DollarSign, MousePointer, FileCheck, Globe } from 'lucide-react'
+import { GoogleAnalyticsSection } from '@/components/GoogleAnalyticsSection'
 import type { Lead, AnalyticsData, ConversionFunnel, TrafficSource } from '@/types'
 
 export const Dashboard = () => {
@@ -156,6 +157,14 @@ export const Dashboard = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Google Analytics Section */}
+        <GoogleAnalyticsSection />
+
+        {/* Divider */}
+        <div className="border-t border-gray-200 my-8"></div>
+
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Dados de Conversão (Supabase)</h2>
+
         {/* Visitor Metrics - New Row */}
         {analytics && analytics.totalVisitors && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
