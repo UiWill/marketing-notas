@@ -18,7 +18,9 @@
       "Bash(git rm:*)",
       "Bash(git reset:*)",
       "Bash(del \"C:\\ERP_SISTEMAS\\Landepage ELI\\public\\videos\\marketing-video.mp4\")",
-      "Bash(del publicCNAME)"
+      "Bash(del publicCNAME)",
+      "Bash(npx supabase functions deploy:*)",
+      "Bash(npx supabase link:*)"
     ],
     "deny": [],
     "ask": []

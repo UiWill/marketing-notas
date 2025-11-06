@@ -68,9 +68,13 @@ export const GoogleAnalyticsSection = () => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-3"></div>
           <p className="text-gray-600">Carregando dados do Google Analytics...</p>
         </div>
+        <p className="text-sm text-gray-500 text-center mt-2">Conectando com a API do Google Analytics...</p>
       </div>
     )
   }
+
+  // Check if we have any data to confirm API is working
+  const hasData = realtimeData || sessionsData?.rows?.length > 0 || pageviewsData?.rows?.length > 0
 
   return (
     <div className="space-y-6 mb-8">
@@ -85,6 +89,23 @@ export const GoogleAnalyticsSection = () => {
           <span className="text-sm font-medium">Ao vivo</span>
         </div>
       </div>
+
+      {/* Status Banner */}
+      {hasData && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-green-800">Google Analytics conectado com sucesso!</h3>
+              <p className="text-xs text-green-700 mt-1">Os dados estão sendo atualizados em tempo real da API do Google Analytics.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Real-time & Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

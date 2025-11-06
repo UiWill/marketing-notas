@@ -101,11 +101,19 @@ async function getAccessToken(credentials: any): Promise<string> {
 }
 
 async function signJWT(header: any, payload: any, privateKey: string): Promise<string> {
-  // This is a simplified version - in production use @tsndr/cloudflare-worker-jwt or similar
   const encoder = new TextEncoder()
-  const headerB64 = btoa(JSON.stringify(header))
-  const payloadB64 = btoa(JSON.stringify(payload))
-  const data = `${headerB64}.${payloadB64}`
+
+  // Base64url encode (not regular base64)
+  const base64urlEncode = (data: string) => {
+    return btoa(data)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '')
+  }
+
+  const headerB64 = base64urlEncode(JSON.stringify(header))
+  const payloadB64 = base64urlEncode(JSON.stringify(payload))
+  const unsignedToken = `${headerB64}.${payloadB64}`
 
   // Import private key
   const key = await crypto.subtle.importKey(
@@ -120,11 +128,12 @@ async function signJWT(header: any, payload: any, privateKey: string): Promise<s
   const signature = await crypto.subtle.sign(
     'RSASSA-PKCS1-v1_5',
     key,
-    encoder.encode(data)
+    encoder.encode(unsignedToken)
   )
 
-  const signatureB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
-  return `${data}.${signatureB64}`
+  // Base64url encode signature
+  const signatureB64 = base64urlEncode(String.fromCharCode(...new Uint8Array(signature)))
+  return `${unsignedToken}.${signatureB64}`
 }
 
 function pemToArrayBuffer(pem: string): ArrayBuffer {
