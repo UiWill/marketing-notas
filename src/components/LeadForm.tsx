@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { User, Mail, Phone, DollarSign, ArrowRight, Loader2 } from 'lucide-react'
+import { User, Mail, Phone, DollarSign, ArrowRight, Loader2, CheckCircle, MessageCircle } from 'lucide-react'
 import { useLeadCapture } from '@/hooks/useLeadCapture'
 import type { LeadFormData } from '@/types'
 
@@ -11,6 +11,7 @@ interface LeadFormProps {
 
 export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => {
   const [showForm, setShowForm] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
   const { submitLead, isSubmitting, error } = useLeadCapture()
 
   const {
@@ -43,10 +44,52 @@ export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => 
         ...data,
         phone: data.phone.replace(/\D/g, ''),
       })
+      setShowSuccess(true)
       onSubmitSuccess(lead.id)
     } catch (err) {
       console.error('Error submitting lead:', err)
     }
+  }
+
+  // Success Message
+  if (showSuccess) {
+    return (
+      <div className={`bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-2xl p-8 ${className} border-2 border-green-200`}>
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
+            <CheckCircle className="w-12 h-12 text-green-600" />
+          </div>
+
+          <h3 className="text-3xl font-bold text-gray-900 mb-3">
+            Cadastro Realizado com Sucesso! 🎉
+          </h3>
+
+          <p className="text-lg text-gray-700 mb-6">
+            Recebemos suas informações e entraremos em contato <span className="font-bold text-green-700">em breve</span> para apresentar nossas soluções personalizadas para o seu negócio.
+          </p>
+
+          <div className="bg-white rounded-xl p-6 mb-6 shadow-md">
+            <p className="text-gray-800 font-medium mb-4">
+              Não quer esperar? Fale conosco agora mesmo!
+            </p>
+
+            <a
+              href="https://wa.me/5518997900032?text=Olá! Acabei de preencher o formulário no site e gostaria de saber mais sobre os serviços da Dnotas."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              <MessageCircle className="w-6 h-6" />
+              Conversar no WhatsApp Agora
+            </a>
+          </div>
+
+          <p className="text-sm text-gray-600">
+            Nossa equipe está pronta para te atender! 💼
+          </p>
+        </div>
+      </div>
+    )
   }
 
   if (!showForm) {
