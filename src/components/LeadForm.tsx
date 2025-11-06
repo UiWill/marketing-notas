@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import { User, Mail, Phone, DollarSign, ArrowRight, Loader2, CheckCircle, MessageCircle } from 'lucide-react'
 import { useLeadCapture } from '@/hooks/useLeadCapture'
+import { trackEvent as trackAnalyticsEvent } from '@/utils/analytics'
 import type { LeadFormData } from '@/types'
 
 interface LeadFormProps {
@@ -51,6 +52,14 @@ export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => 
     }
   }
 
+  const handleWhatsAppClick = () => {
+    // Track WhatsApp click event
+    trackAnalyticsEvent('whatsapp_click', {
+      source: 'success_message',
+      timestamp: new Date().toISOString()
+    })
+  }
+
   // Success Message
   if (showSuccess) {
     return (
@@ -77,6 +86,7 @@ export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => 
               href="https://wa.me/5518997900032?text=Olá! Acabei de preencher o formulário no site e gostaria de saber mais sobre os serviços da Dnotas."
               target="_blank"
               rel="noopener noreferrer"
+              onClick={handleWhatsAppClick}
               className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               <MessageCircle className="w-6 h-6" />

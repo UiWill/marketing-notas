@@ -44,6 +44,13 @@ export const LandingPage = () => {
     }
   }
 
+  const handleWhatsAppFloatingClick = () => {
+    trackEvent('whatsapp_click', {
+      source: 'floating_button',
+      timestamp: new Date().toISOString()
+    })
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-800 via-primary-900 to-black">
       {/* Header */}
@@ -664,6 +671,7 @@ export const LandingPage = () => {
           href="https://wa.me/5518997900032?text=Olá! Gostaria de saber mais sobre os planos da Dnotas para emissão de notas fiscais."
           target="_blank"
           rel="noopener noreferrer"
+          onClick={handleWhatsAppFloatingClick}
           className="flex items-center justify-center w-16 h-16 bg-green-500 hover:bg-green-600 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
           aria-label="Falar no WhatsApp"
         >
