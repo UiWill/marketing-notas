@@ -284,7 +284,7 @@ export const Dashboard = () => {
                 <div className="w-full bg-gray-200 rounded-full h-8">
                   <div
                     className="bg-purple-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{ width: `${(conversionFunnel.video_started / conversionFunnel.total_visitors) * 100}%` }}
+                    style={{ width: `${Math.min((conversionFunnel.video_started / conversionFunnel.total_visitors) * 100, 100)}%` }}
                   >
                     {((conversionFunnel.video_started / conversionFunnel.total_visitors) * 100).toFixed(1)}%
                   </div>
@@ -300,7 +300,7 @@ export const Dashboard = () => {
                 <div className="w-full bg-gray-200 rounded-full h-8">
                   <div
                     className="bg-orange-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{ width: `${(conversionFunnel.cta_clicked / conversionFunnel.total_visitors) * 100}%` }}
+                    style={{ width: `${Math.min((conversionFunnel.cta_clicked / conversionFunnel.total_visitors) * 100, 100)}%` }}
                   >
                     {((conversionFunnel.cta_clicked / conversionFunnel.total_visitors) * 100).toFixed(1)}%
                   </div>
@@ -316,7 +316,7 @@ export const Dashboard = () => {
                 <div className="w-full bg-gray-200 rounded-full h-8">
                   <div
                     className="bg-green-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{ width: `${(conversionFunnel.form_submitted / conversionFunnel.total_visitors) * 100}%` }}
+                    style={{ width: `${Math.min((conversionFunnel.form_submitted / conversionFunnel.total_visitors) * 100, 100)}%` }}
                   >
                     {((conversionFunnel.form_submitted / conversionFunnel.total_visitors) * 100).toFixed(1)}%
                   </div>
@@ -332,7 +332,7 @@ export const Dashboard = () => {
                 <div className="w-full bg-gray-200 rounded-full h-8">
                   <div
                     className="bg-emerald-600 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{ width: `${(conversionFunnel.converted / conversionFunnel.total_visitors) * 100}%` }}
+                    style={{ width: `${Math.min((conversionFunnel.converted / conversionFunnel.total_visitors) * 100, 100)}%` }}
                   >
                     {((conversionFunnel.converted / conversionFunnel.total_visitors) * 100).toFixed(1)}%
                   </div>
