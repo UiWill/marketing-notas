@@ -74,7 +74,7 @@ export const LandingPage = () => {
       <section className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <VideoPlayer
-            url="https://www.youtube.com/watch?v=vmmBD2Rxb9M"
+            url="https://archive.org/download/timeline-2_202511/Timeline%202.ia.mp4"
             leadId={leadId}
             onTimeUpdate={handleVideoTimeUpdate}
             showControlsAfter={687} // Show controls at 11:27 (687 seconds)

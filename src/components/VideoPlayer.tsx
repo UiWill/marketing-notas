@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import ReactPlayer from 'react-player'
-import { Play, Pause } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { useVideoTracking } from '@/hooks/useVideoTracking'
 
 interface VideoPlayerProps {
@@ -17,7 +17,7 @@ export const VideoPlayer = ({
   leadId,
   onTimeUpdate,
   showControlsAfter = 0,
-  autoPlay = true, // Changed default to true
+  autoPlay = true,
   className = ''
 }: VideoPlayerProps) => {
   const [hasStarted, setHasStarted] = useState(false) // Track if user clicked play
