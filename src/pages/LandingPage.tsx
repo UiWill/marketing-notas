@@ -56,16 +56,22 @@ export const LandingPage = () => {
       {/* Header */}
       <header className="container mx-auto px-4 py-6">
         <div className="text-center">
+          {/* VERSÃO A - Copy Original da Cliente (Para Testes A/B) */}
+          {/* 
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
-            Emissão de{' '}
-            <span className="text-accent-400">Notas Fiscais</span>
+            Se você fatura mais de <span className="text-accent-400">12.000 por mês</span> e não emite NF, <span className="text-red-400">cuidado...</span>
           </h1>
-          <h2 className="text-3xl md:text-5xl font-bold text-accent-400 mb-6">
-            Simples, Rápida e Segura
-          </h2>
-          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto">
-            Se você <span className="text-accent-400 font-bold">fatura mais de R$ 7.000 por mês</span> e precisa{' '}
-            <span className="text-accent-400 font-bold">emitir NF-e, NFC-e ou NFS-e</span>, chegou no lugar certo!
+          */}
+          
+          {/* VERSÃO B - Título Atual (Ativo) */}
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
+            Se você fatura mais de <span className="text-accent-400">12.000 por mês</span> e não emite NF, <span className="text-red-400">cuidado...</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto mb-8">
+            Você pode estar perdendo dinheiro e correndo sérios riscos fiscais!
+          </p>
+          <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto">
+            <span className="text-accent-400 font-bold">Descubra agora</span> como regularizar sua situação fiscal e proteger seu negócio de multas e problemas com a Receita Federal.
           </p>
         </div>
       </header>
@@ -101,7 +107,7 @@ export const LandingPage = () => {
           className="container mx-auto px-4 py-16"
         >
           {/* Social Proof */}
-          <section className="text-center mb-16">
+          <section className="bg-white/5 backdrop-blur-sm py-16 -mx-4 px-4 rounded-3xl mb-16 text-center">
             <ScrollAnimation animation="slideUp" delay={0.2}>
               <h2 className="text-3xl md:text-4xl text-white font-bold mb-4">
                 Já são mais de <span className="text-accent-400">300 clientes</span> que confiaram na Dnotas
@@ -141,60 +147,6 @@ export const LandingPage = () => {
             </div>
           </section>
 
-          {/* Problem Agitation Section */}
-          <section className="mb-16">
-            <div className="max-w-4xl mx-auto text-center">
-              <ScrollAnimation animation="slideUp">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
-                  Você Sabia Que Emitir Notas Fiscais Erradas Pode Te Custar Caro?
-                </h2>
-              </ScrollAnimation>
-
-              <ScrollAnimation animation="scaleUp" delay={0.3}>
-                <div className="bg-red-900/20 border border-red-500/30 rounded-2xl p-8 mb-8 hover:bg-red-900/30 transition-all duration-300">
-                <h3 className="text-2xl font-bold text-red-400 mb-6">
-                  ⚠️ ATENÇÃO: Problemas com Notas Fiscais
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                  <div className="space-y-4">
-                    <p className="text-white flex items-start gap-3">
-                      <span className="text-red-400 text-xl">•</span>
-                      <span>Notas fiscais rejeitadas por erro de preenchimento</span>
-                    </p>
-                    <p className="text-white flex items-start gap-3">
-                      <span className="text-red-400 text-xl">•</span>
-                      <span>Perda de tempo com sistemas complicados</span>
-                    </p>
-                    <p className="text-white flex items-start gap-3">
-                      <span className="text-red-400 text-xl">•</span>
-                      <span>Multas por emissão fora do prazo</span>
-                    </p>
-                  </div>
-                  <div className="space-y-4">
-                    <p className="text-white flex items-start gap-3">
-                      <span className="text-red-400 text-xl">•</span>
-                      <span>Problemas de integração com sistemas</span>
-                    </p>
-                    <p className="text-white flex items-start gap-3">
-                      <span className="text-red-400 text-xl">•</span>
-                      <span>Dificuldade para acompanhar o status das notas</span>
-                    </p>
-                    <p className="text-white flex items-start gap-3">
-                      <span className="text-red-400 text-xl">•</span>
-                      <span>Custos altos com sistemas complexos</span>
-                    </p>
-                  </div>
-                </div>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation animation="fadeIn" delay={0.6}>
-                <p className="text-xl text-white/90">
-                  <span className="text-accent-400 font-bold">A boa notícia é:</span> você pode emitir suas notas fiscais de forma simples e automatizada!
-                </p>
-              </ScrollAnimation>
-            </div>
-          </section>
 
           {/* Solution Section */}
           <section className="mb-16">
@@ -212,23 +164,23 @@ export const LandingPage = () => {
                 {[
                   {
                     icon: CheckCircle,
-                    title: 'Emissão Automática',
-                    description: 'NF-e, NFC-e e NFS-e emitidas automaticamente sem complicação'
+                    title: 'Emissão Humanizada',
+                    description: 'Garanto te entregar NF-e, NFC-e e NFS-e sem complicação, com acompanhamento pessoal'
                   },
                   {
                     icon: Shield,
                     title: 'Validação Garantida',
-                    description: 'Sistema validado pela Receita Federal, sem riscos de rejeição'
+                    description: 'Garanto que suas notas serão validadas pela Receita Federal, sem riscos de rejeição'
                   },
                   {
                     icon: Clock,
                     title: 'Rapidez na Emissão',
-                    description: 'Emita suas notas em segundos, não em horas'
+                    description: 'Minha equipe emitirá suas notas em segundos, não em horas'
                   },
                   {
                     icon: Award,
                     title: 'Suporte Especializado',
-                    description: 'Equipe experiente para te ajudar em qualquer dúvida'
+                    description: 'Equipe experiente que garanto estar sempre disponível para te ajudar'
                   }
                 ].map((benefit, index) => (
                   <motion.div
@@ -298,9 +250,12 @@ export const LandingPage = () => {
 
               <ScrollAnimation animation="fadeIn" delay={0.8}>
                 <div className="mt-12 text-center">
-                  <p className="text-xl text-white/90">
-                    <span className="text-accent-400 font-bold">Com a Dnotas:</span> Todos os tipos em uma plataforma única e simples!
+                  <p className="text-xl text-white/90 mb-6">
+                    <span className="text-accent-400 font-bold">Com a Dnotas:</span> Todos os tipos em um serviço único e simples!
                   </p>
+                  <button className="bg-accent-500 hover:bg-accent-600 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105">
+                    COMEÇAR AGORA
+                  </button>
                 </div>
               </ScrollAnimation>
             </div>
@@ -318,25 +273,19 @@ export const LandingPage = () => {
                 Veja o Que Nossos Clientes Dizem
               </motion.h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 {[
                   {
-                    name: 'Maria Silva',
-                    business: 'Loja de Roupas',
-                    text: 'Antes eu perdia horas tentando emitir notas fiscais. Com a Dnotas, em segundos está tudo pronto! Sistema muito fácil.',
-                    rating: 5
+                    name: 'Carlos - Loja de Eletrônicos',
+                    text: 'Nossa, vocês resolveram meu problema em 1 dia! Estava com medo de multa da Receita, agora estou tranquilo 👏',
+                    time: '14:32',
+                    avatar: '👨‍💼'
                   },
                   {
-                    name: 'João Santos',
-                    business: 'Restaurante',
-                    text: 'Emito NFC-e para meus clientes sem dor de cabeça. O sistema nunca falha e o suporte é excelente. Recomendo!',
-                    rating: 5
-                  },
-                  {
-                    name: 'Ana Costa',
-                    business: 'Consultoria',
-                    text: 'Como presto serviços, preciso de NFS-e. A Dnotas integra com todos os municípios. Nunca mais tive nota rejeitada!',
-                    rating: 5
+                    name: 'Marina - Salão de Beleza',
+                    text: 'Meninas, muito obrigada! Agora consigo emitir as notas sem erro nenhum. O sistema é muito fácil mesmo! 💅✨',
+                    time: '16:45',
+                    avatar: '👩‍💼'
                   }
                 ].map((testimonial, index) => (
                   <motion.div
@@ -346,15 +295,32 @@ export const LandingPage = () => {
                     transition={{ delay: 1.7 + index * 0.1 }}
                     className="bg-white/10 backdrop-blur-sm rounded-2xl p-6"
                   >
-                    <div className="flex items-center mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <span key={i} className="text-yellow-400 text-xl">★</span>
-                      ))}
+                    {/* WhatsApp Style Header */}
+                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/20">
+                      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-xl">
+                        {testimonial.avatar}
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">{testimonial.name}</p>
+                        <p className="text-white/60 text-sm">online</p>
+                      </div>
+                      <div className="ml-auto">
+                        <span className="text-white/60 text-xs">{testimonial.time}</span>
+                      </div>
                     </div>
-                    <p className="text-white/90 mb-4 italic">"{testimonial.text}"</p>
-                    <div className="border-t border-white/20 pt-4">
-                      <p className="text-accent-400 font-bold">{testimonial.name}</p>
-                      <p className="text-white/60 text-sm">{testimonial.business}</p>
+                    
+                    {/* Message Bubble */}
+                    <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4 relative">
+                      <p className="text-white/90">{testimonial.text}</p>
+                      <div className="absolute -bottom-2 right-4">
+                        <div className="w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-green-500/30"></div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-3 flex justify-end">
+                      <span className="text-white/60 text-xs flex items-center gap-1">
+                        ✓✓ <span>Lido</span>
+                      </span>
                     </div>
                   </motion.div>
                 ))}
@@ -386,9 +352,9 @@ export const LandingPage = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-4">Especialistas em Emissão de Notas Fiscais</h3>
                   <p className="text-xl text-white/90 leading-relaxed">
-                    Somos uma startup digital especializada em simplificar a emissão de notas fiscais.
-                    Nossa missão é eliminar a dor de cabeça administrativa, oferecendo uma plataforma
-                    intuitiva e confiável para todos os tipos de negócio.
+                    Somos uma empresa especializada em simplificar a emissão de notas fiscais.
+                    Nossa missão é eliminar a dor de cabeça administrativa, oferecendo um serviço
+                    completo e confiável para todos os tipos de negócio.
                   </p>
                 </div>
 
@@ -410,149 +376,72 @@ export const LandingPage = () => {
             </div>
           </section>
 
-          {/* Pricing Plans Section */}
-          <section className="mb-16">
-            <div className="max-w-6xl mx-auto">
+          {/* Single Pricing Plan Section */}
+          <section className="bg-gradient-to-br from-accent-900/20 to-accent-800/10 py-16 -mx-4 px-4 rounded-3xl mb-16">
+            <div className="max-w-4xl mx-auto">
               <ScrollAnimation animation="slideUp">
                 <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
-                  Escolha o Plano Ideal Para Seu Negócio
+                  Regularização Express - Oferta Especial
                 </h2>
               </ScrollAnimation>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                {/* Basic Plan */}
-                <ScrollAnimation animation="slideLeft" delay={0.2}>
-                  <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/10 hover:bg-white/10 transition-all duration-300">
-                    <h3 className="text-2xl font-bold text-white mb-4">Emissão de Notas Fiscais</h3>
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold text-accent-500">R$ 125</span>
-                      <span className="text-white/80">/mês</span>
-                    </div>
-                    <div className="space-y-3 mb-8">
-                      <p className="text-white flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                        Pacote básico
-                      </p>
-                      <p className="text-white flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                        Emissão de até 4 notas fiscais
-                      </p>
-                      <p className="text-white flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                        R$ 20,00 por cada nota fiscal adicional
-                      </p>
-                      <div className="mt-6">
-                        <p className="text-white font-bold mb-2">Taxa de Adesão</p>
-                        <p className="text-white flex items-center gap-2">
-                          <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                          Licença de Adesão
-                        </p>
-                        <p className="text-white flex items-center gap-2">
-                          <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                          Preço: R$ 125,00 (única vez)
-                        </p>
-                      </div>
-                    </div>
-                    <button className="w-full bg-accent-500 hover:bg-white hover:text-black text-black font-bold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105">
-                      Começar Agora
-                    </button>
-                  </div>
-                </ScrollAnimation>
-
-                {/* Complete Plan */}
-                <ScrollAnimation animation="slideRight" delay={0.4}>
-                  <div className="bg-gradient-to-b from-white/10 to-white/5 border-2 border-accent-500 rounded-2xl p-8 text-center relative hover:bg-white/15 transition-all duration-300">
+              <div className="max-w-2xl mx-auto">
+                <ScrollAnimation animation="scaleUp" delay={0.2}>
+                  <div className="bg-gradient-to-b from-white/15 to-white/5 border-2 border-accent-500 rounded-2xl p-8 text-center relative hover:bg-white/20 transition-all duration-300">
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-accent-500 text-black px-4 py-2 rounded-full text-sm font-bold">
-                        MAIS POPULAR
+                      <span className="bg-accent-500 text-black px-6 py-3 rounded-full text-sm font-bold">
+                        OFERTA LIMITADA
                       </span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-4">Serviço Completo de BPO Fiscal</h3>
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold text-accent-500">R$ 375</span>
-                      <span className="text-white/80">/mês</span>
+                    
+                    <h3 className="text-2xl font-bold text-white mb-6 mt-4">Pacote Completo de Regularização</h3>
+                    
+                    <div className="mb-8">
+                      <div className="text-5xl font-bold text-accent-500 mb-2">R$ 575</div>
+                      <p className="text-white/80 mb-4">Taxa inicial + R$ 375/mês</p>
+                      <p className="text-sm text-white/70">Sem contrato de fidelidade</p>
                     </div>
-                    <div className="space-y-3 mb-8">
-                      <p className="text-white flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                        Pacote Completo
+                    
+                    <div className="space-y-4 mb-8 text-left">
+                      <p className="text-white flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0 mt-1" />
+                        <span>Garanto a abertura de CNPJ ou regularização completa</span>
                       </p>
-                      <p className="text-white flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                        Emissão ilimitada de notas fiscais
+                      <p className="text-white flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0 mt-1" />
+                        <span>Garanto emissão ilimitada de NF-e, NFC-e e NFS-e</span>
                       </p>
-                      <p className="text-white flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                        Serviço completo de terceirização de processos fiscais
+                      <p className="text-white flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0 mt-1" />
+                        <span>Garanto te entregar todas as certidões necessárias</span>
                       </p>
-                      <p className="text-white flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                        Garantindo conformidade e eficiência nos processos tributários
+                      <p className="text-white flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0 mt-1" />
+                        <span>Garanto consultoria fiscal personalizada</span>
                       </p>
-                      <div className="mt-6">
-                        <p className="text-white font-bold mb-2">Taxa de Adesão</p>
-                        <p className="text-white flex items-center gap-2">
-                          <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                          Licença de Adesão
-                        </p>
-                        <p className="text-white flex items-center gap-2">
-                          <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0" />
-                          Preço: R$ 525,00 (única vez)
-                        </p>
-                      </div>
+                      <p className="text-white flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0 mt-1" />
+                        <span>Garantia de conformidade legal</span>
+                      </p>
+                      <p className="text-white flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-accent-500 flex-shrink-0 mt-1" />
+                        <span>Sem contrato de fidelidade</span>
+                      </p>
                     </div>
-                    <button className="w-full bg-accent-500 hover:bg-white hover:text-black text-black font-bold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105">
-                      Quero Este Plano
+                    
+                    <button className="w-full bg-accent-500 hover:bg-white hover:text-black text-black font-bold py-4 px-6 rounded-full text-xl transition-all duration-300 transform hover:scale-105 mb-4">
+                      QUERO REGULARIZAR AGORA
                     </button>
+                    
+                    <p className="text-white/70 text-sm">
+                      🔒 Pagamento seguro • ✅ Sem taxas ocultas • 📞 Suporte especializado
+                    </p>
                   </div>
                 </ScrollAnimation>
               </div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.4 }}
-                className="mt-8 text-center"
-              >
-                <p className="text-white/90">
-                  💳 Sem taxas de setup • 🔄 Cancele quando quiser • 📞 Suporte especializado
-                </p>
-              </motion.div>
             </div>
           </section>
 
-          {/* Urgency and Scarcity Section */}
-          <section className="mb-16">
-            <div className="max-w-4xl mx-auto">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.2 }}
-                className="bg-gradient-to-r from-red-900/30 to-red-800/30 border border-red-500/50 rounded-2xl p-8 text-center"
-              >
-                <h3 className="text-3xl md:text-4xl font-bold text-red-400 mb-6">
-                  ⏰ TEMPO LIMITADO
-                </h3>
-                <p className="text-2xl font-bold text-white mb-4">
-                  Regularização Express por apenas
-                </p>
-                <div className="mb-6">
-                  <span className="text-lg text-white/60 line-through">De R$ 2.997</span>
-                  <span className="text-4xl font-bold text-accent-400 block">
-                    Por R$ 997
-                  </span>
-                  <span className="text-lg text-white/80">ou 12x de R$ 83,08</span>
-                </div>
-                <div className="bg-red-900/40 rounded-xl p-4 mb-6">
-                  <p className="text-white font-bold mb-2">⚠️ ATENÇÃO:</p>
-                  <p className="text-white/90">
-                    Estamos atendendo apenas <span className="text-accent-400 font-bold">10 novos clientes por mês</span> para
-                    garantir a qualidade do atendimento. Restam apenas <span className="text-red-400 font-bold">3 vagas</span> para este mês!
-                  </p>
-                </div>
-              </motion.div>
-            </div>
-          </section>
 
           {/* What's Included Section */}
           <section className="mb-16">
@@ -647,6 +536,30 @@ export const LandingPage = () => {
               </div>
             </ScrollAnimation>
           </section>
+
+          {/* WhatsApp Contact Section */}
+          <section className="text-center mb-16">
+            <ScrollAnimation animation="slideUp">
+              <div className="bg-green-900/20 border border-green-500/30 rounded-2xl p-8 max-w-2xl mx-auto">
+                <MessageCircle className="w-16 h-16 text-green-400 mx-auto mb-6" />
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  Ainda está em dúvida se deve ou não garantir os nossos serviços?
+                </h3>
+                <p className="text-white/90 mb-6">
+                  Fique à vontade para nos chamar no WhatsApp! Nossa equipe está pronta para esclarecer todas as suas dúvidas.
+                </p>
+                <a
+                  href="https://wa.me/5518997900032?text=Olá! Tenho algumas dúvidas sobre os serviços da Dnotas. Podem me ajudar?"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  <MessageCircle className="w-6 h-6" />
+                  Falar no WhatsApp
+                </a>
+              </div>
+            </ScrollAnimation>
+          </section>
         </motion.div>
         </>
       )}
@@ -660,24 +573,6 @@ export const LandingPage = () => {
         </div>
       </footer>
 
-      {/* WhatsApp Floating Button */}
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 1, type: "spring", stiffness: 260, damping: 20 }}
-        className="fixed bottom-6 right-6 z-50"
-      >
-        <a
-          href="https://wa.me/5518997900032?text=Olá! Gostaria de saber mais sobre os planos da Dnotas para emissão de notas fiscais."
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleWhatsAppFloatingClick}
-          className="flex items-center justify-center w-16 h-16 bg-green-500 hover:bg-green-600 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-          aria-label="Falar no WhatsApp"
-        >
-          <MessageCircle className="w-8 h-8 text-white" />
-        </a>
-      </motion.div>
     </div>
   )
 }

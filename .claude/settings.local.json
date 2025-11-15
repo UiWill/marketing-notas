@@ -22,7 +22,9 @@
       "Bash(npx supabase functions deploy:*)",
       "Bash(npx supabase link:*)",
       "Bash(.gitignore)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(find:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []
