@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Shield, CheckCircle, Users, TrendingUp, Clock, Award, FileText, CreditCard, Building, MessageCircle } from 'lucide-react'
+import { Shield, CheckCircle, Users, Clock, Award, FileText, CreditCard, Building, MessageCircle } from 'lucide-react'
 import { VideoPlayer } from '@/components/VideoPlayer'
 import { LeadForm } from '@/components/LeadForm'
 import { ScrollAnimation } from '@/components/ScrollAnimation'
@@ -89,76 +89,163 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Button and Content - Only appears at 11:27 */}
+      {/* Content - Only appears at 11:27 */}
       {showContent && (
         <>
-          <section className="container mx-auto px-4 py-8">
-            <LeadForm
-              onSubmitSuccess={handleLeadSubmit}
-              className="max-w-lg mx-auto"
-            />
-          </section>
-
-          {/* Additional content after CTA */}
+          {/* Additional content after video */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="container mx-auto px-4 py-16"
         >
-          {/* Social Proof */}
-          <section className="bg-white/5 backdrop-blur-sm py-16 -mx-4 px-4 rounded-3xl mb-16 text-center">
-            <ScrollAnimation animation="slideUp" delay={0.2}>
-              <h2 className="text-3xl md:text-4xl text-white font-bold mb-4">
-                Já são mais de <span className="text-accent-400">300 clientes</span> que confiaram na Dnotas
-              </h2>
-            </ScrollAnimation>
-
-            <ScrollAnimation animation="slideUp" delay={0.4}>
-              <p className="text-xl text-white/90 mb-12 max-w-3xl mx-auto">
-                E hoje emitem suas notas fiscais sem erro, sem complicação e com total conformidade fiscal
-              </p>
-            </ScrollAnimation>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <ScrollAnimation animation="slideUp" delay={0.6}>
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <Users className="w-12 h-12 text-accent-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-white mb-2">300+ Clientes</h3>
-                  <p className="text-white/80">Empresários que já simplificaram sua emissão de notas</p>
-                </div>
+          {/* Testimonials Section - Logo após o vídeo */}
+          <section className="mb-16">
+            <div className="max-w-6xl mx-auto">
+              <ScrollAnimation animation="slideUp">
+                <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
+                  Veja o Que Nossos Clientes Dizem
+                </h2>
+                <p className="text-xl text-white/90 text-center mb-12 max-w-3xl mx-auto">
+                  Já são mais de <span className="text-accent-400 font-bold">300 clientes</span> que confiaram na Dnotas e transformaram sua gestão fiscal
+                </p>
               </ScrollAnimation>
 
-              <ScrollAnimation animation="slideUp" delay={0.8}>
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <Shield className="w-12 h-12 text-accent-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-white mb-2">100% Digital</h3>
-                  <p className="text-white/80">Emissão online de NF-e, NFC-e e NFS-e</p>
-                </div>
-              </ScrollAnimation>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  {
+                    name: 'Carlos Silva',
+                    business: 'Loja de Eletrônicos',
+                    text: 'Nossa, vocês resolveram meu problema em 1 dia! Estava com medo de multa da Receita, agora estou tranquilo 👏',
+                    time: '14:32',
+                    avatar: '👨‍💼'
+                  },
+                  {
+                    name: 'Marina Costa',
+                    business: 'Salão de Beleza',
+                    text: 'Meninas, muito obrigada! Agora consigo emitir as notas sem erro nenhum. O sistema é muito fácil mesmo! 💅✨',
+                    time: '16:45',
+                    avatar: '👩‍💼'
+                  },
+                  {
+                    name: 'Roberto Almeida',
+                    business: 'Restaurante',
+                    text: 'Melhor decisão que tomei! Antes ficava horas tentando fazer NF, agora é automático. Equipe nota 10! 🍽️',
+                    time: '10:20',
+                    avatar: '👨‍🍳'
+                  },
+                  {
+                    name: 'Juliana Souza',
+                    business: 'Loja de Roupas',
+                    text: 'Estava desesperada com a fiscalização. A Dnotas resolveu tudo em 2 dias! Super recomendo 👗✨',
+                    time: '09:15',
+                    avatar: '👩‍💼'
+                  },
+                  {
+                    name: 'Pedro Santos',
+                    business: 'Oficina Mecânica',
+                    text: 'Achei que ia ser complicado, mas foi super tranquilo. Suporte excelente, sempre que preciso eles respondem rápido! 🔧',
+                    time: '15:30',
+                    avatar: '👨‍🔧'
+                  },
+                  {
+                    name: 'Ana Paula',
+                    business: 'Consultoria',
+                    text: 'Economizei tempo e dinheiro! Não preciso mais de contador só pra emitir nota. Vale muito a pena! 📊',
+                    time: '11:50',
+                    avatar: '👩‍💼'
+                  }
+                ].map((testimonial, index) => (
+                  <ScrollAnimation key={index} animation="slideUp" delay={0.1 * index}>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 h-full">
+                      {/* WhatsApp Style Header */}
+                      <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/20">
+                        <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+                          {testimonial.avatar}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-semibold truncate">{testimonial.name}</p>
+                          <p className="text-white/60 text-sm truncate">{testimonial.business}</p>
+                        </div>
+                        <div className="flex-shrink-0">
+                          <span className="text-white/60 text-xs">{testimonial.time}</span>
+                        </div>
+                      </div>
 
-              <ScrollAnimation animation="slideUp" delay={1.0}>
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <TrendingUp className="w-12 h-12 text-accent-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-white mb-2">Sem Erros</h3>
-                  <p className="text-white/80">Sistema automatizado e validado pela Receita</p>
-                </div>
-              </ScrollAnimation>
+                      {/* Message Bubble */}
+                      <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4 relative">
+                        <p className="text-white/90 text-sm leading-relaxed">{testimonial.text}</p>
+                        <div className="absolute -bottom-2 right-4">
+                          <div className="w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-green-500/30"></div>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 flex justify-end">
+                        <span className="text-white/60 text-xs flex items-center gap-1">
+                          ✓✓ <span>Lido</span>
+                        </span>
+                      </div>
+                    </div>
+                  </ScrollAnimation>
+                ))}
+              </div>
             </div>
           </section>
 
+          {/* CTA Principal com Efeito de Destaque */}
+          <section className="mb-16">
+            <ScrollAnimation animation="scaleUp">
+              <div className="max-w-3xl mx-auto text-center">
+                <div className="bg-gradient-to-br from-accent-500 via-accent-400 to-yellow-500 p-1 rounded-3xl shadow-2xl">
+                  <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-8 md:p-12">
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                      Pronto para Regularizar Seu Negócio?
+                    </h2>
+                    <p className="text-xl text-white/90 mb-8 leading-relaxed">
+                      Junte-se a mais de 300 empresários que já regularizaram sua situação fiscal e agora emitem notas sem preocupação!
+                    </p>
 
-          {/* Solution Section */}
+                    <button
+                      onClick={() => {
+                        const form = document.getElementById('lead-form')
+                        form?.scrollIntoView({ behavior: 'smooth' })
+                      }}
+                      className="group relative bg-accent-500 hover:bg-white text-black font-bold py-6 px-12 rounded-full text-xl md:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-2xl mb-6 w-full md:w-auto"
+                    >
+                      <span className="relative z-10">CONTRATAR SERVIÇO AGORA</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-accent-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      <div className="absolute -inset-1 bg-gradient-to-r from-accent-500 to-yellow-500 rounded-full blur opacity-30 group-hover:opacity-100 transition duration-300 -z-10"></div>
+                    </button>
+
+                    <div className="flex items-center justify-center gap-6 text-white/80 text-sm flex-wrap">
+                      <span className="flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        Sem fidelidade
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        Garantia 30 dias
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        Suporte imediato
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ScrollAnimation>
+          </section>
+
+
+          {/* Como a Dnotas Simplifica - Depois do CTA */}
           <section className="mb-16">
             <div className="max-w-4xl mx-auto text-center">
-              <motion.h2
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.1 }}
-                className="text-3xl md:text-4xl font-bold text-white mb-8"
-              >
-                Como a Dnotas Simplifica Sua Emissão de Notas
-              </motion.h2>
+              <ScrollAnimation animation="slideUp">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
+                  Como a Dnotas Simplifica Sua Emissão de Notas
+                </h2>
+              </ScrollAnimation>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {[
@@ -183,21 +270,159 @@ export const LandingPage = () => {
                     description: 'Equipe experiente que garanto estar sempre disponível para te ajudar'
                   }
                 ].map((benefit, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.2 + index * 0.1 }}
-                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 flex items-start gap-4"
-                  >
-                    <benefit.icon className="w-8 h-8 text-accent-400 flex-shrink-0 mt-1" />
-                    <div>
-                      <h4 className="text-xl font-bold text-white mb-2">{benefit.title}</h4>
-                      <p className="text-white/80">{benefit.description}</p>
+                  <ScrollAnimation key={index} animation="slideUp" delay={0.1 * index}>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 flex items-start gap-4 hover:bg-white/15 transition-all duration-300">
+                      <benefit.icon className="w-8 h-8 text-accent-400 flex-shrink-0 mt-1" />
+                      <div>
+                        <h4 className="text-xl font-bold text-white mb-2">{benefit.title}</h4>
+                        <p className="text-white/80">{benefit.description}</p>
+                      </div>
                     </div>
-                  </motion.div>
+                  </ScrollAnimation>
                 ))}
               </div>
+            </div>
+          </section>
+
+          {/* O MEU TIME AO SEU FAVOR */}
+          <section className="mb-16 bg-white/5 backdrop-blur-sm py-16 -mx-4 px-4 rounded-3xl">
+            <div className="max-w-4xl mx-auto text-center">
+              <ScrollAnimation animation="slideUp">
+                <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                  O MEU TIME AO SEU FAVOR
+                </h2>
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fadeIn" delay={0.2}>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 md:p-12">
+                  <Users className="w-20 h-20 text-accent-400 mx-auto mb-6" />
+                  <p className="text-xl md:text-2xl text-white/95 leading-relaxed">
+                    Tenho uma <span className="text-accent-400 font-bold">equipe focada</span> em entregar os serviços prometidos{' '}
+                    <span className="text-accent-400 font-bold">dia e noite</span>, em dias úteis ou feriados, a{' '}
+                    <span className="text-accent-400 font-bold">qualquer momento</span> que o seu cliente precisar de uma nota fiscal no ato da compra ou quando você emitir vendas fiscalizadas.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                    <div className="bg-white/10 rounded-xl p-6">
+                      <Clock className="w-12 h-12 text-accent-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-bold text-white mb-2">24/7 Disponível</h3>
+                      <p className="text-white/80 text-sm">Atendimento todos os dias, sem exceção</p>
+                    </div>
+
+                    <div className="bg-white/10 rounded-xl p-6">
+                      <Shield className="w-12 h-12 text-accent-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-bold text-white mb-2">Equipe Especializada</h3>
+                      <p className="text-white/80 text-sm">Profissionais treinados e experientes</p>
+                    </div>
+
+                    <div className="bg-white/10 rounded-xl p-6">
+                      <Award className="w-12 h-12 text-accent-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-bold text-white mb-2">Compromisso Total</h3>
+                      <p className="text-white/80 text-sm">Focados em entregar o prometido</p>
+                    </div>
+                  </div>
+                </div>
+              </ScrollAnimation>
+            </div>
+          </section>
+
+          {/* Tabela Comparativa: Com DNOTAS vs Sem DNOTAS */}
+          <section className="mb-16">
+            <div className="max-w-6xl mx-auto">
+              <ScrollAnimation animation="slideUp">
+                <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+                  Veja a Diferença Entre Ter e Não Ter a DNOTAS
+                </h2>
+              </ScrollAnimation>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Sem o DNOTAS */}
+                <ScrollAnimation animation="slideUp" delay={0.2}>
+                  <div className="bg-red-900/20 border-2 border-red-500/30 rounded-2xl p-8 h-full">
+                    <div className="text-center mb-6">
+                      <div className="bg-red-500/20 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                        <span className="text-4xl">❌</span>
+                      </div>
+                      <h3 className="text-2xl md:text-3xl font-bold text-red-400 mb-2">
+                        Sem o DNOTAS
+                      </h3>
+                      <p className="text-white/70">você vai precisar...</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {[
+                        'Correr risco de cair na malha fina',
+                        'Pagar + de R$ 1.800 para um profissional em emissões de NF',
+                        'Gastar tempo tentando fazer as NF da forma correta',
+                        'Se preocupar em mandar ao seu contabilista os relatórios obrigatórios de vendas e de estoque todos os meses',
+                        'Se virar sozinho quando um cliente solicitar NF e seu funcionário não estar disponível para emitir',
+                        'Correr o risco de fazer NF com dados incorretos e ter dor de cabeça ao tentar arrumar os erros enviados ao SEFAZ'
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-start gap-3 bg-red-500/10 rounded-lg p-4">
+                          <span className="text-red-400 flex-shrink-0 mt-1">👎</span>
+                          <p className="text-white/90">{item}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </ScrollAnimation>
+
+                {/* Com o DNOTAS */}
+                <ScrollAnimation animation="slideUp" delay={0.4}>
+                  <div className="bg-green-900/20 border-2 border-accent-500/50 rounded-2xl p-8 h-full relative overflow-hidden">
+                    {/* Efeito de brilho */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent-500/10 to-transparent"></div>
+
+                    <div className="relative z-10">
+                      <div className="text-center mb-6">
+                        <div className="bg-accent-500/20 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                          <span className="text-4xl">✅</span>
+                        </div>
+                        <h3 className="text-2xl md:text-3xl font-bold text-accent-400 mb-2">
+                          Com o DNOTAS você...
+                        </h3>
+                        <p className="text-white/70">terá todos esses benefícios</p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {[
+                          'Terá as suas NF emitidas no SEFAZ dentro de 12h após a venda',
+                          'Receberá os relatórios diários das emissões de NF via WhatsApp',
+                          'Terá relatórios completos do seu estoque e das vendas enviadas ao SEFAZ enviados para o seu contabilista todos os meses',
+                          'Terá acesso a minha equipe manhã, tarde e noite para quaisquer eventualidade fiscal sobre vendas',
+                          'Receberá aconselhamento fiscal de vendas quando precisar',
+                          'Ficará livre de cometer erros',
+                          'Terá + tempo para focar em outras áreas do seu comércio'
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-start gap-3 bg-accent-500/10 rounded-lg p-4 border border-accent-500/20">
+                            <CheckCircle className="w-5 h-5 text-accent-400 flex-shrink-0 mt-1" />
+                            <p className="text-white/90">{item}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </ScrollAnimation>
+              </div>
+
+              {/* CTA após tabela */}
+              <ScrollAnimation animation="scaleUp" delay={0.6}>
+                <div className="text-center mt-12">
+                  <p className="text-2xl text-white mb-6">
+                    A escolha é sua: continuar na <span className="text-red-400 font-bold">incerteza</span> ou ter{' '}
+                    <span className="text-accent-400 font-bold">segurança total</span>?
+                  </p>
+                  <button
+                    onClick={() => {
+                      const form = document.getElementById('lead-form')
+                      form?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                    className="bg-accent-500 hover:bg-white text-black font-bold py-5 px-10 rounded-full text-xl transition-all duration-300 transform hover:scale-105 shadow-xl"
+                  >
+                    QUERO TER A DNOTAS AO MEU LADO
+                  </button>
+                </div>
+              </ScrollAnimation>
             </div>
           </section>
 
@@ -253,7 +478,13 @@ export const LandingPage = () => {
                   <p className="text-xl text-white/90 mb-6">
                     <span className="text-accent-400 font-bold">Com a Dnotas:</span> Todos os tipos em um serviço único e simples!
                   </p>
-                  <button className="bg-accent-500 hover:bg-accent-600 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105">
+                  <button
+                    onClick={() => {
+                      const form = document.getElementById('lead-form')
+                      form?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                    className="bg-accent-500 hover:bg-accent-600 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+                  >
                     COMEÇAR AGORA
                   </button>
                 </div>
@@ -261,72 +492,6 @@ export const LandingPage = () => {
             </div>
           </section>
 
-          {/* Testimonials Section */}
-          <section className="mb-16">
-            <div className="max-w-6xl mx-auto">
-              <motion.h2
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.6 }}
-                className="text-3xl md:text-4xl font-bold text-white text-center mb-12"
-              >
-                Veja o Que Nossos Clientes Dizem
-              </motion.h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                {[
-                  {
-                    name: 'Carlos - Loja de Eletrônicos',
-                    text: 'Nossa, vocês resolveram meu problema em 1 dia! Estava com medo de multa da Receita, agora estou tranquilo 👏',
-                    time: '14:32',
-                    avatar: '👨‍💼'
-                  },
-                  {
-                    name: 'Marina - Salão de Beleza',
-                    text: 'Meninas, muito obrigada! Agora consigo emitir as notas sem erro nenhum. O sistema é muito fácil mesmo! 💅✨',
-                    time: '16:45',
-                    avatar: '👩‍💼'
-                  }
-                ].map((testimonial, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.7 + index * 0.1 }}
-                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6"
-                  >
-                    {/* WhatsApp Style Header */}
-                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/20">
-                      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-xl">
-                        {testimonial.avatar}
-                      </div>
-                      <div>
-                        <p className="text-white font-semibold">{testimonial.name}</p>
-                        <p className="text-white/60 text-sm">online</p>
-                      </div>
-                      <div className="ml-auto">
-                        <span className="text-white/60 text-xs">{testimonial.time}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Message Bubble */}
-                    <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4 relative">
-                      <p className="text-white/90">{testimonial.text}</p>
-                      <div className="absolute -bottom-2 right-4">
-                        <div className="w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-green-500/30"></div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-3 flex justify-end">
-                      <span className="text-white/60 text-xs flex items-center gap-1">
-                        ✓✓ <span>Lido</span>
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
 
           {/* About ELI Section */}
           <section className="mb-16">
@@ -443,54 +608,6 @@ export const LandingPage = () => {
           </section>
 
 
-          {/* What's Included Section */}
-          <section className="mb-16">
-            <div className="max-w-4xl mx-auto">
-              <motion.h2
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.3 }}
-                className="text-3xl md:text-4xl font-bold text-white text-center mb-8"
-              >
-                O Que Está Incluso no Serviço
-              </motion.h2>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.4 }}
-                className="bg-white/10 backdrop-blur-sm rounded-2xl p-8"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    'Abertura de CNPJ ou regularização completa',
-                    'Emissão de todas as certidões necessárias',
-                    'Configuração do sistema de notas fiscais',
-                    'Treinamento completo da equipe',
-                    'Consultoria fiscal personalizada',
-                    'Suporte durante todo o processo',
-                    'Garantia de conformidade legal',
-                    'Acompanhamento pós-regularização'
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <CheckCircle className="w-6 h-6 text-accent-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-white">{item}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-8 p-6 bg-accent-500/20 rounded-xl border border-accent-400/30">
-                  <p className="text-center text-white font-bold text-xl mb-2">
-                    BÔNUS EXCLUSIVO
-                  </p>
-                  <p className="text-center text-white/90">
-                    Consultoria tributária gratuita por <span className="text-accent-400 font-bold">3 meses</span>
-                    para otimizar seus impostos (Valor: R$ 897)
-                  </p>
-                </div>
-              </motion.div>
-            </div>
-          </section>
 
           {/* Guarantee Section */}
           <section className="mb-16">
@@ -527,7 +644,13 @@ export const LandingPage = () => {
                   A cada dia que passa, os riscos aumentam. Proteja seu negócio agora mesmo
                   e garante uma das últimas vagas deste mês.
                 </p>
-                <button className="bg-black text-white font-bold py-4 px-8 rounded-full text-xl hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 mb-4">
+                <button
+                  onClick={() => {
+                    const form = document.getElementById('lead-form')
+                    form?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                  className="bg-black text-white font-bold py-4 px-8 rounded-full text-xl hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 mb-4"
+                >
                   QUERO GARANTIR MINHA VAGA AGORA
                 </button>
                 <p className="text-gray-600 text-sm">
@@ -535,6 +658,33 @@ export const LandingPage = () => {
                 </p>
               </div>
             </ScrollAnimation>
+          </section>
+
+          {/* Formulário de Lead - Com ID para os CTAs */}
+          <section id="lead-form" className="mb-16 scroll-mt-8">
+            <div className="max-w-3xl mx-auto">
+              <ScrollAnimation animation="scaleUp">
+                <div className="bg-gradient-to-br from-accent-500/10 to-white/5 backdrop-blur-sm border-2 border-accent-500/30 rounded-3xl p-8 md:p-12">
+                  <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
+                    Garanta Sua Vaga Agora!
+                  </h2>
+                  <p className="text-xl text-white/90 text-center mb-8">
+                    Preencha o formulário abaixo e nossa equipe entrará em contato em até 10 minutos
+                  </p>
+
+                  <LeadForm
+                    onSubmitSuccess={handleLeadSubmit}
+                    className="max-w-lg mx-auto"
+                  />
+
+                  <div className="mt-6 text-center">
+                    <p className="text-white/70 text-sm">
+                      🔒 Seus dados estão seguros e protegidos
+                    </p>
+                  </div>
+                </div>
+              </ScrollAnimation>
+            </div>
           </section>
 
           {/* WhatsApp Contact Section */}
@@ -553,6 +703,7 @@ export const LandingPage = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+                  onClick={handleWhatsAppFloatingClick}
                 >
                   <MessageCircle className="w-6 h-6" />
                   Falar no WhatsApp

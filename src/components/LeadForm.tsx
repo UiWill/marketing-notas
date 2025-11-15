@@ -11,7 +11,7 @@ interface LeadFormProps {
 }
 
 export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => {
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(true) // Mudado para true para mostrar o formulário direto
   const [showSuccess, setShowSuccess] = useState(false)
   const { submitLead, isSubmitting, error } = useLeadCapture()
 
