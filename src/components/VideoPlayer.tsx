@@ -35,6 +35,10 @@ export const VideoPlayer = ({
   const handleEnableSound = useCallback(() => {
     setMuted(false)
     setShowSoundNotice(false)
+    // Voltar o vídeo para o início
+    if (playerRef.current) {
+      playerRef.current.seekTo(0)
+    }
   }, [])
 
   // Fechar aviso sem ativar som
