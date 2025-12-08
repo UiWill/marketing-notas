@@ -82,9 +82,9 @@ export const LandingPage = () => {
           <div className="mt-6 text-center">
             <button
               onClick={() => {
-                const contratarButton = document.getElementById('contratar-servico-button')
-                contratarButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                trackEvent('cta_clicked', { location: 'below_video', target: 'contratar_button' })
+                const pricingButton = document.getElementById('pricing-contratar-button')
+                pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                trackEvent('cta_clicked', { location: 'below_video', target: 'pricing_button' })
               }}
               className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-xl md:text-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl uppercase w-full md:w-auto"
             >
@@ -267,8 +267,9 @@ export const LandingPage = () => {
                     <button
                       id="contratar-servico-button"
                       onClick={() => {
-                        setShowModal(true)
-                        trackEvent('pricing_cta_clicked', { location: 'main_cta' })
+                        const pricingButton = document.getElementById('pricing-contratar-button')
+                        pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        trackEvent('cta_clicked', { location: 'main_cta', target: 'pricing_button' })
                       }}
                       className="group relative bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-xl md:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-2xl mb-6 w-full md:w-auto"
                     >
@@ -665,11 +666,9 @@ export const LandingPage = () => {
                     </div>
 
                     <button
+                      id="pricing-contratar-button"
                       onClick={() => {
-                        const contratarButton = document.getElementById('contratar-servico-button')
-                        contratarButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                        // Aguardar scroll terminar e então abrir modal
-                        setTimeout(() => setShowModal(true), 800)
+                        setShowModal(true)
                         trackEvent('pricing_cta_clicked', { location: 'pricing_card' })
                       }}
                       className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-5 px-8 rounded-full text-2xl transition-all duration-300 transform hover:scale-105 mb-6 shadow-xl"
