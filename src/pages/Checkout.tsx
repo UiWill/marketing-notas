@@ -81,8 +81,8 @@ export const Checkout = () => {
 
     try {
       // Preparar dados do pagamento
-      // BOLETO tem valor mínimo de R$ 5,00 no Asaas
-      const valorPagamento = selectedPayment === 'BOLETO' ? 5.00 : 0.10
+      // Todos os métodos com valor mínimo de R$ 5,00
+      const valorPagamento = 5.00
 
       const paymentData: PaymentData = {
         customer: {
@@ -92,7 +92,7 @@ export const Checkout = () => {
           phone: leadData.phone
         },
         billingType: selectedPayment,
-        value: valorPagamento, // R$ 0,10 para PIX/Cartão, R$ 5,00 para Boleto
+        value: valorPagamento, // R$ 5,00 para todos os métodos
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 dias
       }
 
@@ -163,7 +163,7 @@ export const Checkout = () => {
             Finalize Sua Contratação
           </h1>
           <p className="text-xl text-white/80">
-            Oferta Indispensável dos Serviços da Dnotas por Apenas R$ 0,10 <span className="font-bold">HOJE</span>
+            Oferta Indispensável dos Serviços da Dnotas por Apenas R$ 5,00 <span className="font-bold">HOJE</span>
           </p>
           <p className="text-lg text-white/60">
             depois passa a pagar R$ 375,00 mensalmente
@@ -355,7 +355,7 @@ export const Checkout = () => {
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
               <span>Valor do Teste:</span>
-              <span className="font-bold">R$ 0,10</span>
+              <span className="font-bold">R$ 5,00</span>
             </div>
             <div className="flex justify-between text-sm text-white/60">
               <span>Valor real em produção:</span>
@@ -365,7 +365,7 @@ export const Checkout = () => {
           <div className="border-t border-white/20 pt-4">
             <div className="flex justify-between text-xl font-bold">
               <span>Total Hoje:</span>
-              <span>R$ 0,10</span>
+              <span>R$ 5,00</span>
             </div>
           </div>
         </div>
