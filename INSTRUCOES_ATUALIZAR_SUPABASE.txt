@@ -1,0 +1,143 @@
+================================================================================
+GUIA COMPLETO: COMO ATUALIZAR AS EDGE FUNCTIONS NO SUPABASE
+================================================================================
+
+Você precisa atualizar 3 funções no painel do Supabase.
+Siga estas instruções passo a passo:
+
+================================================================================
+PASSO 1: ACESSAR O PAINEL DO SUPABASE
+================================================================================
+
+1. Abra o navegador
+2. Acesse: https://supabase.com/dashboard/project/xtxuoqcunnlccnujbbhk/functions
+3. Você verá a lista das Edge Functions
+
+================================================================================
+PASSO 2: ATUALIZAR FUNÇÃO 1 - asaas-webhook (MAIS IMPORTANTE!)
+================================================================================
+
+Esta é a função que recebe os webhooks do Asaas quando o pagamento é confirmado.
+
+1. Na lista de funções, clique em "asaas-webhook"
+2. Clique no botão "Edit" ou ícone de lápis
+3. Apague TODO o código que está lá
+4. Abra o arquivo: ATUALIZAR_SUPABASE_1_asaas-webhook.txt
+5. Copie TODO o código do arquivo
+6. Cole no editor do Supabase
+7. Clique em "Deploy" ou "Save & Deploy"
+8. Aguarde a mensagem de sucesso
+
+================================================================================
+PASSO 3: ATUALIZAR FUNÇÃO 2 - asaas-payment
+================================================================================
+
+Esta função cria o pagamento no Asaas quando o cliente vai para o checkout.
+
+1. Volte para a lista de funções
+2. Clique em "asaas-payment"
+3. Clique no botão "Edit" ou ícone de lápis
+4. Apague TODO o código que está lá
+5. Abra o arquivo: ATUALIZAR_SUPABASE_2_asaas-payment.txt
+6. Copie TODO o código do arquivo
+7. Cole no editor do Supabase
+8. Clique em "Deploy" ou "Save & Deploy"
+9. Aguarde a mensagem de sucesso
+
+================================================================================
+PASSO 4: ATUALIZAR FUNÇÃO 3 - asaas-get-payment
+================================================================================
+
+Esta função busca os dados do pagamento para mostrar na página de obrigado.
+
+1. Volte para a lista de funções
+2. Clique em "asaas-get-payment"
+3. Clique no botão "Edit" ou ícone de lápis
+4. Apague TODO o código que está lá
+5. Abra o arquivo: ATUALIZAR_SUPABASE_3_asaas-get-payment.txt
+6. Copie TODO o código do arquivo
+7. Cole no editor do Supabase
+8. Clique em "Deploy" ou "Save & Deploy"
+9. Aguarde a mensagem de sucesso
+
+================================================================================
+PASSO 5: TESTAR NO ASAAS
+================================================================================
+
+Agora vamos testar se o webhook está funcionando:
+
+1. Volte para o painel do Asaas
+2. Vá em: Integrações > Webhooks > Logs de Webhooks
+3. Encontre um webhook com erro 401
+4. Clique em "Reenviar da fila"
+5. Aguarde alguns segundos
+6. Verifique se agora aparece "Status 200" (sucesso!)
+
+Se aparecer status 200, TUDO FUNCIONOU! ✅
+
+================================================================================
+PASSO 6: FAZER UM TESTE COMPLETO
+================================================================================
+
+Para ter certeza que tudo está funcionando:
+
+1. Abra o site: https://dnotas.github.io/Landepage-ELI/
+2. Preencha o formulário com seus dados de teste
+3. Vá para o checkout
+4. Escolha PIX
+5. Faça um pagamento de R$ 5,00
+6. Na página de Obrigado, aguarde alguns segundos
+7. A página deve atualizar automaticamente quando o pagamento for confirmado
+8. Você deve receber 2 WhatsApp:
+   - Um no número do cliente (que você cadastrou)
+   - Um no número do Eli: 18 99668-2525
+
+================================================================================
+O QUE CADA FUNÇÃO FAZ:
+================================================================================
+
+📌 asaas-webhook
+   - Recebe notificações do Asaas quando pagamento é confirmado
+   - Atualiza o banco de dados com o status
+   - Envia WhatsApp para o cliente
+   - Envia WhatsApp para o Eli
+
+📌 asaas-payment
+   - Cria o cliente no Asaas
+   - Cria a cobrança (PIX, Boleto ou Cartão)
+   - Gera o QR Code do PIX
+   - Salva os dados no banco
+
+📌 asaas-get-payment
+   - Busca informações do pagamento
+   - Usado na página de Obrigado para mostrar o QR Code
+
+================================================================================
+PROBLEMAS COMUNS:
+================================================================================
+
+❌ Se der erro 401 no webhook:
+   → Você ainda não atualizou a função asaas-webhook
+   → Siga o PASSO 2 novamente
+
+❌ Se o WhatsApp não chegar:
+   → Verifique se o webhook está com status 200
+   → Verifique o número do WhatsApp está correto
+   → Veja os logs da função no Supabase
+
+❌ Se a página não atualizar automaticamente:
+   → Aguarde até 10 segundos (polling a cada 5 segundos)
+   → Verifique se o leadId foi passado na URL
+   → Atualize a página manualmente
+
+================================================================================
+DÚVIDAS?
+================================================================================
+
+Se algo não funcionar, verifique:
+1. As 3 funções foram atualizadas?
+2. O deploy foi feito com sucesso?
+3. O webhook no Asaas está configurado?
+4. Os eventos corretos estão selecionados no Asaas?
+
+================================================================================

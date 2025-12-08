@@ -1,3 +1,11 @@
+================================================================================
+EDGE FUNCTION 1: asaas-webhook
+================================================================================
+
+NOME DA FUNÇÃO NO SUPABASE: asaas-webhook
+
+COPIE TODO O CÓDIGO ABAIXO E COLE NO EDITOR DA FUNÇÃO:
+
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -58,28 +66,10 @@ serve(async (req) => {
       updated_at: new Date().toISOString()
     }
 
-    // Eventos do Asaas:
-    // PAYMENT_RECEIVED - Pagamento confirmado
-    // PAYMENT_CONFIRMED - Pagamento confirmado (alias)
-    // PAYMENT_CREATED - Cobrança criada
-    // PAYMENT_UPDATED - Cobrança atualizada
-    // PAYMENT_OVERDUE - Cobrança vencida
-    // PAYMENT_DELETED - Cobrança removida
-    // PAYMENT_RESTORED - Cobrança restaurada
-    // PAYMENT_REFUNDED - Pagamento estornado
-    // PAYMENT_RECEIVED_IN_CASH - Recebido em dinheiro
-    // PAYMENT_CHARGEBACK_REQUESTED - Chargeback solicitado
-    // PAYMENT_CHARGEBACK_DISPUTE - Disputa de chargeback
-    // PAYMENT_AWAITING_CHARGEBACK_REVERSAL - Aguardando reversão de chargeback
-    // PAYMENT_DUNNING_RECEIVED - Cobrança recebida (recuperação)
-    // PAYMENT_DUNNING_REQUESTED - Cobrança solicitada (recuperação)
-    // PAYMENT_BANK_SLIP_VIEWED - Boleto visualizado
-    // PAYMENT_CHECKOUT_VIEWED - Checkout visualizado
-
     switch (event) {
       case 'PAYMENT_RECEIVED':
       case 'PAYMENT_CONFIRMED':
-        updateData.payment_status = 'confirmed'
+        updateData.payment_status = 'RECEIVED'
         updateData.conversion_stage = 'converted'
         updateData.converted_at = new Date().toISOString()
         break
@@ -195,3 +185,5 @@ Acesse o painel para mais detalhes! 💰`
     )
   }
 })
+
+================================================================================
