@@ -102,14 +102,65 @@ serve(async (req) => {
 
     console.log(`Lead ${lead.id} atualizado com sucesso. Status: ${updateData.payment_status}`)
 
-    // Se o pagamento foi confirmado, podemos enviar e-mail, notificar equipe, etc.
+    // Se o pagamento foi confirmado, enviar WhatsApp
     if (event === 'PAYMENT_RECEIVED' || event === 'PAYMENT_CONFIRMED') {
       console.log(`✅ PAGAMENTO CONFIRMADO! Lead: ${lead.name} (${lead.email})`)
-      // Aqui você pode adicionar lógica para:
-      // - Enviar e-mail de boas-vindas
-      // - Notificar equipe de vendas
-      // - Criar registro de assinatura
-      // - etc.
+
+      // Enviar WhatsApp para o cliente
+      try {
+        const customerMessage = `Olá ${lead.name}! 👋
+
+Recebemos seu pagamento via ${lead.payment_method === 'PIX' ? 'PIX' : lead.payment_method === 'CREDIT_CARD' ? 'Cartão de Crédito' : 'Boleto'}! ✅
+
+Em breve nossa equipe entrará em contato para dar continuidade ao processo de regularização do seu negócio.
+
+Qualquer dúvida, estamos à disposição!
+
+*Equipe Dnotas* 📋`
+
+        await fetch('https://backend.uaiviu.com.br/api/messages/send', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer dnotas2023',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            number: lead.phone.replace(/\D/g, ''),
+            body: customerMessage
+          })
+        })
+        console.log(`WhatsApp enviado para cliente: ${lead.phone}`)
+      } catch (whatsappError) {
+        console.error('Erro ao enviar WhatsApp para cliente:', whatsappError)
+      }
+
+      // Enviar WhatsApp para o proprietário (Eli)
+      try {
+        const ownerMessage = `🎉 *NOVA VENDA CONFIRMADA!* 🎉
+
+*Cliente:* ${lead.name}
+*E-mail:* ${lead.email}
+*Telefone:* ${lead.phone}
+*Método:* ${lead.payment_method === 'PIX' ? 'PIX' : lead.payment_method === 'CREDIT_CARD' ? 'Cartão de Crédito' : 'Boleto'}
+*Valor:* R$ 5,00
+
+Acesse o painel para mais detalhes! 💰`
+
+        await fetch('https://backend.uaiviu.com.br/api/messages/send', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer dnotas2023',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            number: '5518996682525', // Número do Eli
+            body: ownerMessage
+          })
+        })
+        console.log(`WhatsApp enviado para proprietário`)
+      } catch (whatsappError) {
+        console.error('Erro ao enviar WhatsApp para proprietário:', whatsappError)
+      }
     }
 
     return new Response(

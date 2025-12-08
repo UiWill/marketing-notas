@@ -137,7 +137,7 @@ export const Checkout = () => {
       }
 
       // A Edge Function já atualiza o banco de dados, apenas redirecionar
-      navigate(`/obrigado?paymentId=${result.id}&method=${selectedPayment}`)
+      navigate(`/obrigado?paymentId=${result.id}&method=${selectedPayment}&leadId=${leadId}`)
     } catch (err: any) {
       console.error('Erro ao processar pagamento:', err)
       setError(err.message || 'Erro ao processar pagamento. Tente novamente.')

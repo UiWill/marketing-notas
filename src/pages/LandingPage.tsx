@@ -762,7 +762,7 @@ export const LandingPage = () => {
                   Fique à vontade para nos chamar no WhatsApp! Nossa equipe está pronta para esclarecer todas as suas dúvidas.
                 </p>
                 <a
-                  href="https://wa.me/5518997900032?text=Olá! Tenho algumas dúvidas sobre os serviços da Dnotas. Podem me ajudar?"
+                  href="https://wa.me/5518996682525?text=Olá! Tenho algumas dúvidas sobre os serviços da Dnotas. Podem me ajudar?"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
