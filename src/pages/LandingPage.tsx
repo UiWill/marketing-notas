@@ -9,7 +9,8 @@ import { usePageTracking } from '@/hooks/usePageTracking'
 
 export const LandingPage = () => {
   const [leadId, setLeadId] = useState<string | undefined>(undefined)
-  const [showContent, setShowContent] = useState(false)
+  const [showContent, setShowContent] = useState(true) // Página sempre liberada
+  const [showModal, setShowModal] = useState(false)
 
   // Page tracking com visitantes anônimos
   const { updatePageView, trackEvent } = usePageTracking({
@@ -30,17 +31,10 @@ export const LandingPage = () => {
   }
 
   const handleVideoTimeUpdate = (time: number) => {
-    // Show content and CTA at 11:27 (687 seconds)
     // Track video start only once
-    if (time >= 1 && time < 5 && !showContent) {
+    if (time >= 1 && time < 5) {
       updatePageView({ started_video: true })
       trackEvent('video_started')
-    }
-
-    // Show CTA button at 11:27
-    if (time >= 687 && !showContent) {
-      setShowContent(true)
-      trackEvent('cta_unlocked', { timestamp: 687 })
     }
   }
 
@@ -77,32 +71,31 @@ export const LandingPage = () => {
       <section className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <VideoPlayer
-            url="https://archive.org/download/timeline-2_202511/Timeline%202.ia.mp4"
+            url="https://youtu.be/vmmBD2Rxb9M"
             leadId={leadId}
             onTimeUpdate={handleVideoTimeUpdate}
-            showControlsAfter={687} // Show controls at 11:27 (687 seconds)
+            showControlsAfter={0} // Controles sempre disponíveis
             className="aspect-video w-full"
           />
+
+          {/* Botão CTA abaixo do vídeo */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => {
+                setShowModal(true)
+                trackEvent('cta_clicked', { location: 'below_video' })
+              }}
+              className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-xl md:text-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl uppercase w-full md:w-auto"
+            >
+              CLIQUE AQUI E RECEBA NOSSOS<br />SERVIÇOS EXCLUSIVOS
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* Content - Only appears at 11:27 */}
+      {/* Content sempre visível */}
       {showContent && (
         <>
-          {/* CTA Button após o vídeo */}
-          <section className="bg-gradient-to-br from-purple-900 via-blue-900 to-purple-900 py-12 px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <button
-                onClick={() => {
-                  const form = document.getElementById('lead-form')
-                  form?.scrollIntoView({ behavior: 'smooth' })
-                }}
-                className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-xl md:text-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl uppercase"
-              >
-                CLIQUE AQUI E RECEBA NOSSOS<br />SERVIÇOS EXCLUSIVOS
-              </button>
-            </div>
-          </section>
 
           {/* Testimonials Section - FUNDO BRANCO FULL WIDTH */}
           <section className="bg-white py-16">
@@ -245,18 +238,10 @@ export const LandingPage = () => {
 
                 <ScrollAnimation animation="slideUp" delay={0.4}>
                   <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                    <div className="text-center space-y-3">
-                      <p className="text-white/90 text-lg font-semibold flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-400 flex-shrink-0" />
-                        <span>garantimos entregar NF... sem complicação, todos os dias e a qualquer momento</span>
-                      </p>
-                      <p className="text-white/90 text-lg font-semibold flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-400 flex-shrink-0" />
-                        <span>Garantimos que suas notas...</span>
-                      </p>
-                      <p className="text-white/90 text-lg font-semibold flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-accent-400 flex-shrink-0" />
-                        <span>Equipe experiente, atualizada nas Leis Fiscais do Brasil e sempre disponível...</span>
+                    <div className="text-center">
+                      <p className="text-white/90 text-lg font-semibold flex items-start gap-2">
+                        <CheckCircle className="w-5 h-5 text-accent-400 flex-shrink-0 mt-1" />
+                        <span>Garanto te entregar NF-e, NFC-e e NFS-e sem complicação, com acompanhamento pessoal sem complicações, todos os dias e a qualquer momento que você precisar</span>
                       </p>
                     </div>
                   </div>
@@ -788,6 +773,28 @@ export const LandingPage = () => {
             </ScrollAnimation>
           </section>
         </>
+      )}
+
+      {/* Modal de Captura de Lead */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 relative my-8">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-bold"
+            >
+              ×
+            </button>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+              Receba Nossos Serviços Exclusivos
+            </h2>
+
+            <LeadForm
+              className="shadow-none"
+            />
+          </div>
+        </div>
       )}
 
       {/* Footer */}

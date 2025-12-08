@@ -99,7 +99,7 @@ export const VideoPlayer = ({
         onEnded={handleEnding}
         width="100%"
         height="100%"
-        controls={false}
+        controls={true}
         config={{
           file: {
             attributes: {
@@ -110,13 +110,15 @@ export const VideoPlayer = ({
           },
           youtube: {
             playerVars: {
-              disablekb: 1,
-              controls: 0,
+              disablekb: 0,
+              controls: 1, // Habilitar controles do YouTube
               modestbranding: 1,
               rel: 0,
               showinfo: 0,
               autoplay: 1,
-              fs: 0,
+              fs: 1, // Permitir fullscreen
+              hd: 1, // Preferir HD
+              quality: 'hd720',
             }
           },
           vimeo: {
@@ -147,18 +149,6 @@ export const VideoPlayer = ({
             </span>
           </button>
         </div>
-      )}
-
-      {/* Camada invisível que bloqueia SEMPRE o mouse no vídeo */}
-      {hasStarted && (
-        <div
-          className="absolute inset-0 z-10 cursor-default"
-          style={{ background: 'transparent' }}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => e.preventDefault()}
-          onDoubleClick={(e) => e.preventDefault()}
-          onContextMenu={(e) => e.preventDefault()}
-        />
       )}
 
       {/* Custom Controls - Apenas visualização, sem controle de play/pause */}

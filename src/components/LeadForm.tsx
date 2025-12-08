@@ -1,18 +1,16 @@
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
-import { User, Mail, Phone, DollarSign, ArrowRight, Loader2, CheckCircle, MessageCircle } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { User, Mail, Phone, DollarSign, ArrowRight, Loader2 } from 'lucide-react'
 import { useLeadCapture } from '@/hooks/useLeadCapture'
-import { trackEvent as trackAnalyticsEvent } from '@/utils/analytics'
 import type { LeadFormData } from '@/types'
 
 interface LeadFormProps {
-  onSubmitSuccess: (leadId: string) => void
+  onSubmit?: (leadId: string) => void
   className?: string
 }
 
-export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => {
-  const [showForm, setShowForm] = useState(true) // Mudado para true para mostrar o formulário direto
-  const [showSuccess, setShowSuccess] = useState(false)
+export const LeadForm = ({ onSubmit, className = '' }: LeadFormProps) => {
+  const navigate = useNavigate()
   const { submitLead, isSubmitting, error } = useLeadCapture()
 
   const {
@@ -39,81 +37,24 @@ export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => 
     }).format(amount)
   }
 
-  const onSubmit = async (data: LeadFormData) => {
+  const handleFormSubmit = async (data: LeadFormData) => {
     try {
       const lead = await submitLead({
         ...data,
         phone: data.phone.replace(/\D/g, ''),
+        revenue: 0, // Valor padrão já que removemos o campo
       })
-      setShowSuccess(true)
-      onSubmitSuccess(lead.id)
+
+      // Se a prop onSubmit foi passada, chamar ela (para uso no modal)
+      if (onSubmit) {
+        onSubmit(lead.id)
+      } else {
+        // Caso contrário, redirecionar para o checkout
+        navigate(`/checkout?leadId=${lead.id}`)
+      }
     } catch (err) {
       console.error('Error submitting lead:', err)
     }
-  }
-
-  const handleWhatsAppClick = () => {
-    // Track WhatsApp click event
-    trackAnalyticsEvent('whatsapp_click', {
-      source: 'success_message',
-      timestamp: new Date().toISOString()
-    })
-  }
-
-  // Success Message
-  if (showSuccess) {
-    return (
-      <div className={`bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-2xl p-8 ${className} border-2 border-green-200`}>
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
-            <CheckCircle className="w-12 h-12 text-green-600" />
-          </div>
-
-          <h3 className="text-3xl font-bold text-gray-900 mb-3">
-            Cadastro Realizado com Sucesso! 🎉
-          </h3>
-
-          <p className="text-lg text-gray-700 mb-6">
-            Recebemos suas informações e entraremos em contato <span className="font-bold text-green-700">em breve</span> para apresentar nossas soluções personalizadas para o seu negócio.
-          </p>
-
-          <div className="bg-white rounded-xl p-6 mb-6 shadow-md">
-            <p className="text-gray-800 font-medium mb-4">
-              Não quer esperar? Fale conosco agora mesmo!
-            </p>
-
-            <a
-              href="https://wa.me/5518997900032?text=Olá! Acabei de preencher o formulário no site e gostaria de saber mais sobre os serviços da Dnotas."
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleWhatsAppClick}
-              className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-            >
-              <MessageCircle className="w-6 h-6" />
-              Conversar no WhatsApp Agora
-            </a>
-          </div>
-
-          <p className="text-sm text-gray-600">
-            Nossa equipe está pronta para te atender! 💼
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!showForm) {
-    return (
-      <div className={`text-center ${className}`}>
-        <button
-          onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl animate-pulse-slow border-2 border-white"
-        >
-          CLIQUE AQUI E RECEBA NOSSOS SERVIÇOS EXCLUSIVOS
-          <ArrowRight className="w-6 h-6" />
-        </button>
-      </div>
-    )
   }
 
   return (
@@ -133,7 +74,7 @@ export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => 
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
             Nome Completo *
@@ -207,31 +148,6 @@ export const LeadForm = ({ onSubmitSuccess, className = '' }: LeadFormProps) => 
           )}
         </div>
 
-        <div>
-          <label htmlFor="revenue" className="block text-sm font-medium text-gray-700 mb-2">
-            Faturamento Mensal *
-          </label>
-          <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              {...register('revenue', {
-                required: 'Faturamento é obrigatório',
-                min: { value: 0.01, message: 'Faturamento deve ser maior que zero' }
-              })}
-              type="text"
-              id="revenue"
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors"
-              placeholder="R$ 0,00"
-              onChange={(e) => {
-                const formatted = formatCurrency(e.target.value)
-                setValue('revenue', parseFloat(formatted.replace(/[^0-9,]/g, '').replace(',', '.')))
-              }}
-            />
-          </div>
-          {errors.revenue && (
-            <p className="mt-1 text-sm text-red-600">{errors.revenue.message}</p>
-          )}
-        </div>
 
         <button
           type="submit"
