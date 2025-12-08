@@ -79,7 +79,7 @@ export const LandingPage = () => {
           />
 
           {/* Botão CTA abaixo do vídeo */}
-          <div className="mt-6 text-center">
+          <div id="cta-button" className="mt-6 text-center">
             <button
               onClick={() => {
                 setShowModal(true)
@@ -265,8 +265,9 @@ export const LandingPage = () => {
 
                     <button
                       onClick={() => {
-                        const form = document.getElementById('lead-form')
-                        form?.scrollIntoView({ behavior: 'smooth' })
+                        const ctaButton = document.getElementById('cta-button')
+                        ctaButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        trackEvent('pricing_cta_clicked', { target: 'cta_button' })
                       }}
                       className="group relative bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-xl md:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-2xl mb-6 w-full md:w-auto"
                     >
@@ -664,8 +665,9 @@ export const LandingPage = () => {
 
                     <button
                       onClick={() => {
-                        const form = document.getElementById('lead-form')
-                        form?.scrollIntoView({ behavior: 'smooth' })
+                        const ctaButton = document.getElementById('cta-button')
+                        ctaButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        trackEvent('pricing_cta_clicked', { target: 'cta_button', location: 'pricing_card' })
                       }}
                       className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-5 px-8 rounded-full text-2xl transition-all duration-300 transform hover:scale-105 mb-6 shadow-xl"
                     >
