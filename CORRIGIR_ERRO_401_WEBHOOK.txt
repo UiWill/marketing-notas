@@ -1,0 +1,122 @@
+================================================================================
+COMO CORRIGIR O ERRO 401 NO WEBHOOK DO ASAAS
+================================================================================
+
+O erro 401 Unauthorized está acontecendo porque a Edge Function do Supabase
+está bloqueando as requisições que vem do Asaas.
+
+SIGA ESTES PASSOS:
+
+================================================================================
+PASSO 1: ACESSAR A FUNÇÃO NO SUPABASE
+================================================================================
+
+1. Acesse: https://supabase.com/dashboard/project/xtxuoqcunnlccnujbbhk/functions
+2. Clique na função "asaas-webhook"
+3. Clique em "Edit" ou no ícone de lápis
+
+================================================================================
+PASSO 2: SUBSTITUIR O CÓDIGO
+================================================================================
+
+APAGUE TODO O CÓDIGO e cole o código atualizado que está no arquivo:
+ATUALIZAR_SUPABASE_1_asaas-webhook.txt
+
+A diferença importante está nas primeiras linhas do código:
+
+ANTES (com erro):
+```
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, asaas-access-token',
+}
+```
+
+DEPOIS (corrigido):
+```
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, asaas-access-token, x-asaas-signature',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+```
+
+================================================================================
+PASSO 3: FAZER O DEPLOY
+================================================================================
+
+1. Após colar o código atualizado, clique em "Deploy" ou "Save & Deploy"
+2. Aguarde a mensagem de sucesso (pode levar 10-30 segundos)
+3. Verifique se aparece "Deployed successfully"
+
+================================================================================
+PASSO 4: TESTAR O WEBHOOK
+================================================================================
+
+1. Volte para o painel do Asaas
+2. Vá em: Integrações > Webhooks > Logs de Webhooks
+3. Encontre o webhook com erro 401 que você mostrou (08/12/2025 15:00)
+4. Clique em "Reenviar da fila" ou "Retry"
+5. Aguarde alguns segundos
+6. Verifique se agora aparece "Status 200" (sucesso!)
+
+Se aparecer status 200, o problema está resolvido! ✅
+
+================================================================================
+PASSO 5: VERIFICAR SE O WHATSAPP FOI ENVIADO
+================================================================================
+
+Se o webhook retornou status 200, o sistema deve ter:
+
+1. Atualizado o status do pagamento no banco de dados
+2. Enviado WhatsApp para o cliente
+3. Enviado WhatsApp para o Eli (18 99668-2525)
+
+Verifique se as 2 mensagens chegaram.
+
+================================================================================
+O QUE FOI CORRIGIDO?
+================================================================================
+
+O problema era que o Supabase estava bloqueando requisições do Asaas porque
+faltavam alguns headers CORS necessários.
+
+Adicionamos:
+- 'x-asaas-signature' nos headers permitidos
+- 'Access-Control-Allow-Methods' com POST e OPTIONS
+- Log dos headers para facilitar debug futuro
+
+================================================================================
+SE AINDA DER ERRO 401
+================================================================================
+
+Se mesmo depois de atualizar o código ainda der erro 401:
+
+1. Verifique se você realmente substituiu TODO o código
+2. Verifique se o deploy foi feito com sucesso
+3. Aguarde 1-2 minutos após o deploy (cache do Supabase)
+4. Tente reenviar o webhook novamente
+
+Se persistir, pode ser necessário:
+- Verificar as configurações de autenticação da Edge Function no Supabase
+- Desabilitar "Require authentication" na função (se estiver habilitado)
+
+================================================================================
+INFORMAÇÕES DO WEBHOOK QUE VOCÊ MOSTROU
+================================================================================
+
+Dados do pagamento recebido:
+- ID: pay_6mmnhvd61sas5uok
+- Cliente: cus_000151759381
+- Valor: R$ 5,00
+- Status: RECEIVED (pago via PIX)
+- Data: 08/12/2025 12:00:33
+- PIX Transaction: 63e696f9-35ca-45f5-aac7-eaf69aebfa40
+
+Quando você reenviar este webhook e ele retornar status 200, o sistema vai:
+1. Buscar o lead com payment_id = pay_6mmnhvd61sas5uok
+2. Atualizar o payment_status para 'confirmed'
+3. Marcar como convertido (conversion_stage = 'converted')
+4. Enviar as 2 mensagens de WhatsApp
+
+================================================================================
