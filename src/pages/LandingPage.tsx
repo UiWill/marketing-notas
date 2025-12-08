@@ -631,8 +631,8 @@ export const LandingPage = () => {
                     <h3 className="text-3xl md:text-4xl font-bold text-white mb-8 mt-4">Pacote Completo de Regularização</h3>
 
                     <div className="mb-10 bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                      <div className="text-6xl md:text-7xl font-bold text-accent-400 mb-3">R$ 575</div>
-                      <p className="text-xl text-white/90 mb-2">Taxa inicial + R$ 375/mês</p>
+                      <div className="text-6xl md:text-7xl font-bold text-accent-400 mb-3">R$ 575/HOJE</div>
+                      <p className="text-xl text-white/90 mb-2">depois passa a pagar R$ 375,00/mensalmente</p>
                       <p className="text-lg text-white/80 font-semibold">Sem contrato de fidelidade</p>
                     </div>
 
@@ -658,7 +658,7 @@ export const LandingPage = () => {
                     <div className="mb-8 text-center space-y-2">
                       <p className="text-white text-lg font-bold">Oferta Única e por Tempo Limitado</p>
                       <p className="text-white/90 text-base">
-                        Adesão inicial por apenas R$ 575,00 e depois você passa a pagar R$ 375,00 por mês
+                        Adesão inicial por apenas R$ 575,00/HOJE e depois você passa a pagar R$ 375,00 por mês
                       </p>
                     </div>
 
