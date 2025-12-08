@@ -469,8 +469,8 @@ export const LandingPage = () => {
                   </p>
                   <button
                     onClick={() => {
-                      const form = document.getElementById('lead-form')
-                      form?.scrollIntoView({ behavior: 'smooth' })
+                      const pricingButton = document.getElementById('pricing-contratar-button')
+                      pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                     }}
                     className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-5 px-10 rounded-full text-xl transition-all duration-300 transform hover:scale-105 shadow-xl"
                   >
@@ -535,8 +535,8 @@ export const LandingPage = () => {
                   </p>
                   <button
                     onClick={() => {
-                      const form = document.getElementById('lead-form')
-                      form?.scrollIntoView({ behavior: 'smooth' })
+                      const pricingButton = document.getElementById('pricing-contratar-button')
+                      pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                     }}
                     className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
                   >
@@ -730,8 +730,8 @@ export const LandingPage = () => {
                 </p>
                 <button
                   onClick={() => {
-                    const form = document.getElementById('lead-form')
-                    form?.scrollIntoView({ behavior: 'smooth' })
+                    const pricingButton = document.getElementById('pricing-contratar-button')
+                    pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                   }}
                   className="bg-black text-white font-bold py-6 px-10 rounded-full text-2xl hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 mb-6 w-full md:w-auto shadow-xl"
                 >
