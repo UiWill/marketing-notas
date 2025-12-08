@@ -61,11 +61,8 @@ export const LeadForm = ({ onSubmit, className = '' }: LeadFormProps) => {
     <div className={`bg-white rounded-2xl shadow-2xl p-8 ${className}`}>
       <div className="text-center mb-6">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">
-          Receba Nossa Consultoria Exclusiva
+          Antes de continuar preciso que você me passe as seguintes informações
         </h3>
-        <p className="text-gray-600">
-          Preencha os dados abaixo e proteja seu negócio hoje mesmo
-        </p>
       </div>
 
       {error && (
@@ -161,7 +158,7 @@ export const LeadForm = ({ onSubmit, className = '' }: LeadFormProps) => {
             </>
           ) : (
             <>
-              QUERO PROTEGER MEU NEGÓCIO AGORA
+              CONTINUAR COM A COMPRA
               <ArrowRight className="w-5 h-5" />
             </>
           )}

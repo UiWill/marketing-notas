@@ -163,10 +163,13 @@ export const Checkout = () => {
             Finalize Sua Contratação
           </h1>
           <p className="text-xl text-white/80">
-            Pacote Completo de Regularização - R$ 0,10
+            Oferta Indispensável dos Serviços da Dnotas por Apenas R$ 0,10 <span className="font-bold">HOJE</span>
           </p>
           <p className="text-lg text-white/60">
-            (Valor de teste - Em produção será R$ 575,00 + R$ 375/mês)
+            depois passa a pagar R$ 375,00 mensalmente
+          </p>
+          <p className="text-sm text-white/50">
+            (Valor de teste - Em produção será R$ 575,00 HOJE + R$ 375/mês)
           </p>
         </div>
 

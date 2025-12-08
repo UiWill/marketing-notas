@@ -656,9 +656,9 @@ export const LandingPage = () => {
                     </div>
 
                     <div className="mb-8 text-center space-y-2">
-                      <p className="text-white text-lg font-bold">1 - Oferta Única e por Tempo Limitado</p>
+                      <p className="text-white text-lg font-bold">Oferta Única e por Tempo Limitado</p>
                       <p className="text-white/90 text-base">
-                        2 - Adesão inicial por apenas 575,00 e depois você passa a pagar 375,00 por mês...
+                        Adesão inicial por apenas R$ 575,00 e depois você passa a pagar R$ 375,00 por mês
                       </p>
                     </div>
 
