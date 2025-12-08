@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import ReactPlayer from 'react-player'
-import { Play } from 'lucide-react'
+import { Volume2, VolumeX } from 'lucide-react'
 import { useVideoTracking } from '@/hooks/useVideoTracking'
 
 interface VideoPlayerProps {
@@ -20,8 +20,9 @@ export const VideoPlayer = ({
   autoPlay = true,
   className = ''
 }: VideoPlayerProps) => {
-  const [hasStarted, setHasStarted] = useState(false) // Track if user clicked play
-  const [playing, setPlaying] = useState(false) // Start paused, waiting for user click
+  const [playing, setPlaying] = useState(true) // Autoplay ativado
+  const [muted, setMuted] = useState(true) // Começa sem som
+  const [showSoundNotice, setShowSoundNotice] = useState(true) // Mostrar aviso de som
   const [played, setPlayed] = useState(0)
   const [duration, setDuration] = useState(0)
   const [showControls, setShowControls] = useState(showControlsAfter === 0)
@@ -30,23 +31,23 @@ export const VideoPlayer = ({
   const playerRef = useRef<ReactPlayer>(null)
   const { updateProgress, handlePlay, handlePause, handleEnded, handleDrop } = useVideoTracking({ leadId })
 
-  const handleInitialPlay = useCallback(() => {
-    setHasStarted(true)
-    setPlaying(true)
-    handlePlay()
-  }, [handlePlay])
+  // Ativar som quando usuário clicar no aviso
+  const handleEnableSound = useCallback(() => {
+    setMuted(false)
+    setShowSoundNotice(false)
+  }, [])
 
-  const handlePlayPause = useCallback(() => {
-    setPlaying(prev => {
-      const newPlaying = !prev
-      if (newPlaying) {
-        handlePlay()
-      } else {
-        handlePause()
-      }
-      return newPlaying
-    })
-  }, [handlePlay, handlePause])
+  // Fechar aviso sem ativar som
+  const handleCloseSoundNotice = useCallback(() => {
+    setShowSoundNotice(false)
+  }, [])
+
+  // Iniciar tracking quando vídeo começar
+  useEffect(() => {
+    if (playing) {
+      handlePlay()
+    }
+  }, [playing, handlePlay])
 
   const handleProgress = useCallback((state: { played: number; playedSeconds: number }) => {
     setPlayed(state.played)
@@ -94,6 +95,7 @@ export const VideoPlayer = ({
         ref={playerRef}
         url={url}
         playing={playing}
+        muted={muted}
         onProgress={handleProgress}
         onDuration={handleDuration}
         onEnded={handleEnding}
@@ -116,6 +118,7 @@ export const VideoPlayer = ({
               rel: 0,
               showinfo: 0,
               autoplay: 1,
+              mute: 1, // Começar sem som
               fs: 1, // Permitir fullscreen
               hd: 1, // Preferir HD
               quality: 'hd720',
@@ -128,26 +131,36 @@ export const VideoPlayer = ({
               byline: false,
               portrait: false,
               autoplay: true,
+              muted: true,
             }
           }
         }}
       />
 
-      {/* Overlay inicial com botão de Play */}
-      {!hasStarted && (
-        <div className="absolute inset-0 z-20 bg-black/70 backdrop-blur-sm flex items-center justify-center">
-          <button
-            onClick={handleInitialPlay}
-            className="group flex flex-col items-center gap-4 transition-transform hover:scale-110"
-            aria-label="Iniciar vídeo"
-          >
-            <div className="flex items-center justify-center w-24 h-24 bg-accent-500 hover:bg-accent-600 rounded-full shadow-2xl transition-all duration-300">
-              <Play className="w-12 h-12 text-white ml-2" />
+      {/* Aviso de Som */}
+      {showSoundNotice && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 animate-bounce">
+          <div className="bg-orange-500 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 max-w-md">
+            <VolumeX className="w-6 h-6 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="font-bold text-sm">O vídeo já começou!</p>
+              <p className="text-xs opacity-90">Clique aqui para ativar o som</p>
             </div>
-            <span className="text-white text-lg font-semibold opacity-90 group-hover:opacity-100 transition-opacity">
-              Clique para Assistir
-            </span>
-          </button>
+            <button
+              onClick={handleEnableSound}
+              className="bg-white text-orange-500 px-4 py-2 rounded-lg font-bold text-sm hover:bg-orange-50 transition-colors flex items-center gap-2"
+            >
+              <Volume2 className="w-4 h-4" />
+              Ativar Som
+            </button>
+            <button
+              onClick={handleCloseSoundNotice}
+              className="text-white hover:text-orange-200 transition-colors ml-2"
+              aria-label="Fechar aviso"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       )}
 
