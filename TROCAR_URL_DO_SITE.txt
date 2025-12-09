@@ -1,0 +1,211 @@
+================================================================================
+GUIA COMPLETO: COMO TROCAR A URL DO SITE
+================================================================================
+
+URL ATUAL: marketing.dnotas.com.br
+URL NOVA: ??? (a cliente vai informar)
+
+================================================================================
+PASSO 1: ATUALIZAR O ARQUIVO CNAME NO CÓDIGO
+================================================================================
+
+1. Abra o arquivo: public/CNAME
+2. Substitua "marketing.dnotas.com.br" pela nova URL
+3. Exemplo:
+
+   ANTES: marketing.dnotas.com.br
+   DEPOIS: novaurldacliente.com.br
+
+4. Salve o arquivo
+
+================================================================================
+PASSO 2: FAZER DEPLOY DO SITE COM A NOVA URL
+================================================================================
+
+Depois de alterar o CNAME, faça o deploy:
+
+1. Abra o terminal/prompt
+2. Execute os comandos:
+
+   git add .
+   git commit -m "chore: Atualizar URL do site para novaurldacliente.com.br"
+   git push
+   npm run deploy
+
+================================================================================
+PASSO 3: CONFIGURAR DNS NO REGISTRO.BR (OU PROVEDOR DE DOMÍNIO)
+================================================================================
+
+Se o domínio for .com.br, acesse: https://registro.br
+
+1. Faça login no painel do Registro.br
+2. Vá em "DNS" ou "Gerenciar DNS"
+3. Configure os seguintes registros:
+
+   TIPO: A
+   HOST: @ (ou deixe vazio)
+   VALOR: 185.199.108.153
+
+   TIPO: A
+   HOST: @ (ou deixe vazio)
+   VALOR: 185.199.109.153
+
+   TIPO: A
+   HOST: @ (ou deixe vazio)
+   VALOR: 185.199.110.153
+
+   TIPO: A
+   HOST: @ (ou deixe vazio)
+   VALOR: 185.199.111.153
+
+4. Se quiser que funcione com "www" também:
+
+   TIPO: CNAME
+   HOST: www
+   VALOR: uiwill.github.io
+
+5. Salve as configurações
+6. Aguarde 10 minutos a 2 horas para propagar (pode variar)
+
+================================================================================
+PASSO 4: CONFIGURAR NO GITHUB PAGES
+================================================================================
+
+1. Acesse: https://github.com/UiWill/marketing-notas/settings/pages
+2. Em "Custom domain", digite a nova URL (exemplo: novaurldacliente.com.br)
+3. Clique em "Save"
+4. Aguarde alguns minutos
+5. Marque a opção "Enforce HTTPS" quando aparecer
+
+================================================================================
+PASSO 5: VERIFICAR SE WEBHOOKS PRECISAM SER ATUALIZADOS
+================================================================================
+
+⚠️ IMPORTANTE: Você NÃO precisa mexer nos webhooks do Asaas!
+
+Os webhooks do Asaas apontam para o Supabase, NÃO para o site:
+- URL do webhook: https://xtxuoqcunnlccnujbbhk.supabase.co/functions/v1/asaas-webhook
+
+A URL do site (frontend) é diferente da URL dos webhooks (backend).
+
+NADA PRECISA SER ALTERADO NO ASAAS! ✅
+
+================================================================================
+O QUE MUDA E O QUE NÃO MUDA?
+================================================================================
+
+✅ MUDA:
+- URL que as pessoas acessam o site (de marketing.dnotas.com.br para nova URL)
+- Arquivo CNAME no código
+- Configuração DNS no Registro.br
+- Custom domain no GitHub Pages
+
+❌ NÃO MUDA:
+- Webhooks do Asaas (continuam apontando pro Supabase)
+- Banco de dados (Supabase)
+- Edge Functions (Supabase)
+- Integração WhatsApp
+- Tracking (Facebook Pixel, Google Analytics)
+
+================================================================================
+RESUMO DOS ARQUIVOS QUE PRECISAM SER ALTERADOS
+================================================================================
+
+📁 public/CNAME
+   - Substituir "marketing.dnotas.com.br" pela nova URL
+
+Só isso! Apenas 1 arquivo precisa ser alterado no código.
+
+================================================================================
+CHECKLIST COMPLETO
+================================================================================
+
+□ 1. Perguntar à cliente qual é a nova URL
+□ 2. Alterar o arquivo public/CNAME
+□ 3. Fazer commit e push do código
+□ 4. Fazer deploy com npm run deploy
+□ 5. Configurar DNS no Registro.br (se aplicável)
+□ 6. Configurar Custom Domain no GitHub Pages
+□ 7. Aguardar propagação do DNS (10min a 2h)
+□ 8. Testar acessando a nova URL
+□ 9. Ativar "Enforce HTTPS" no GitHub Pages
+□ 10. Testar todo o fluxo: vídeo → formulário → checkout → pagamento
+
+================================================================================
+POSSÍVEIS PROBLEMAS E SOLUÇÕES
+================================================================================
+
+❌ Problema: Site não carrega na nova URL
+✅ Solução:
+   - Verifique se o DNS foi configurado corretamente
+   - Aguarde mais tempo (propagação pode levar até 48h)
+   - Verifique se o CNAME está correto no código
+
+❌ Problema: Site carrega mas sem estilo (só texto)
+✅ Solução:
+   - Verifique se fez o deploy após alterar o CNAME
+   - Limpe o cache do navegador (Ctrl+F5)
+
+❌ Problema: "DNS_PROBE_FINISHED_NXDOMAIN"
+✅ Solução:
+   - DNS ainda não propagou, aguarde mais tempo
+   - Verifique se os registros A estão corretos
+
+================================================================================
+EXEMPLO COMPLETO DE MUDANÇA DE URL
+================================================================================
+
+URL ANTIGA: marketing.dnotas.com.br
+URL NOVA: vendas.minhaempresa.com.br
+
+1. Editar public/CNAME:
+   vendas.minhaempresa.com.br
+
+2. Fazer deploy:
+   git add .
+   git commit -m "chore: Atualizar URL para vendas.minhaempresa.com.br"
+   git push
+   npm run deploy
+
+3. No Registro.br (ou provedor do domínio minhaempresa.com.br):
+   - Adicionar 4 registros A apontando para os IPs do GitHub
+   - Adicionar CNAME para www
+
+4. No GitHub Pages:
+   - Custom domain: vendas.minhaempresa.com.br
+   - Enforce HTTPS: ✓
+
+5. Aguardar propagação e testar!
+
+================================================================================
+DÚVIDAS FREQUENTES
+================================================================================
+
+Q: Preciso mexer no Asaas?
+A: NÃO! Os webhooks continuam funcionando normalmente.
+
+Q: Preciso mexer no Supabase?
+A: NÃO! O banco de dados não depende da URL do site.
+
+Q: E se a cliente quiser usar um domínio completamente diferente?
+A: O processo é o mesmo! Basta configurar o DNS do novo domínio.
+
+Q: Quanto tempo leva para funcionar?
+A: Depois do deploy: imediato
+   Depois de configurar DNS: 10 minutos a 48 horas (geralmente 1-2 horas)
+
+Q: Posso usar subdomínio? (exemplo: lp.dnotas.com.br)
+A: SIM! O processo é exatamente o mesmo.
+
+================================================================================
+SUPORTE ADICIONAL
+================================================================================
+
+Se tiver dúvidas sobre DNS:
+- Registro.br: https://registro.br/ajuda/
+- GitHub Pages: https://docs.github.com/pt/pages/configuring-a-custom-domain-for-your-github-pages-site
+
+Se o domínio não for .com.br, procure o painel do provedor:
+- GoDaddy, HostGator, Locaweb, etc.
+
+================================================================================
