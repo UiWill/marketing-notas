@@ -24,7 +24,9 @@
       "Bash(.gitignore)",
       "Bash(del:*)",
       "Bash(find:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.asaas.com)"
     ],
     "deny": [],
     "ask": []

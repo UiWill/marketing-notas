@@ -24,6 +24,7 @@ export const Checkout = () => {
   const [leadData, setLeadData] = useState<any>(null)
   const [selectedPayment, setSelectedPayment] = useState<'CREDIT_CARD' | 'BOLETO' | 'PIX'>('PIX')
   const [cpfCnpj, setCpfCnpj] = useState('')
+  const [postalCode, setPostalCode] = useState('')
   const [cardData, setCardData] = useState({
     holderName: '',
     number: '',
@@ -75,6 +76,11 @@ export const Checkout = () => {
     return numbers.replace(/(\d{4})/g, '$1 ').trim()
   }
 
+  const formatCEP = (value: string) => {
+    const numbers = value.replace(/\D/g, '')
+    return numbers.replace(/(\d{5})(\d{3})/, '$1-$2')
+  }
+
   const processPayment = async () => {
     setProcessing(true)
     setError('')
@@ -110,6 +116,8 @@ export const Checkout = () => {
             name: cardData.holderName,
             email: leadData.email,
             cpfCnpj: cpfCnpj.replace(/\D/g, ''),
+            postalCode: postalCode.replace(/\D/g, ''),
+            addressNumber: '0',
             phone: leadData.phone
           }
         })
@@ -261,6 +269,20 @@ export const Checkout = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  CEP do Titular *
+                </label>
+                <input
+                  type="text"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(formatCEP(e.target.value))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="00000-000"
+                  maxLength={9}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Número do Cartão *
                 </label>
                 <input
@@ -328,7 +350,7 @@ export const Checkout = () => {
           {/* Submit Button */}
           <button
             onClick={processPayment}
-            disabled={processing || !cpfCnpj}
+            disabled={processing || !cpfCnpj || (selectedPayment === 'CREDIT_CARD' && !postalCode)}
             className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {processing ? (
