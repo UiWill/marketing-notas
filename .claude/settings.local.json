@@ -26,7 +26,12 @@
       "Bash(find:*)",
       "Bash(npm run dev:*)",
       "WebSearch",
-      "WebFetch(domain:docs.asaas.com)"
+      "WebFetch(domain:docs.asaas.com)",
+      "Bash(dir \"C:\\ERP_SISTEMAS\\Landepage ELI\\dist\\D.JPG\")",
+      "Bash(dir:*)",
+      "Bash(copy \"C:\\ERP_SISTEMAS\\Landepage ELI\\dist\\D.JPG\" \"C:\\ERP_SISTEMAS\\Landepage ELI\\public\\D.JPG\")",
+      "Bash(cp:*)",
+      "Bash(gh run:*)"
     ],
     "deny": [],
     "ask": []
