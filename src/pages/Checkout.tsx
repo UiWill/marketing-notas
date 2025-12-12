@@ -87,8 +87,7 @@ export const Checkout = () => {
 
     try {
       // Preparar dados do pagamento
-      // Todos os métodos com valor mínimo de R$ 5,00
-      const valorPagamento = 5.00
+      const valorPagamento = 525.00 // R$ 575,00 - R$ 50,00 de desconto
 
       const paymentData: PaymentData = {
         customer: {
@@ -98,7 +97,7 @@ export const Checkout = () => {
           phone: leadData.phone
         },
         billingType: selectedPayment,
-        value: valorPagamento, // R$ 5,00 para todos os métodos
+        value: valorPagamento,
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 dias
       }
 
@@ -171,13 +170,13 @@ export const Checkout = () => {
             Finalize Sua Contratação
           </h1>
           <p className="text-xl text-white/80">
-            Oferta Indispensável dos Serviços da Dnotas por Apenas R$ 5,00 <span className="font-bold">HOJE</span>
+            <span className="line-through opacity-60">R$ 575,00</span> por Apenas <span className="text-green-400 font-bold">R$ 525,00</span> <span className="font-bold">HOJE</span>
+          </p>
+          <p className="text-lg text-green-400 font-semibold mb-2">
+            Economize R$ 50,00 na Taxa de Adesão!
           </p>
           <p className="text-lg text-white/60">
             depois passa a pagar R$ 375,00 mensalmente
-          </p>
-          <p className="text-sm text-white/50">
-            (Valor de teste - Em produção será R$ 575,00 HOJE + R$ 375/mês)
           </p>
         </div>
 
@@ -376,18 +375,22 @@ export const Checkout = () => {
           <h3 className="font-bold text-lg mb-4">Resumo do Pedido</h3>
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
-              <span>Valor do Teste:</span>
-              <span className="font-bold">R$ 5,00</span>
+              <span>Taxa de Adesão:</span>
+              <span className="line-through opacity-60">R$ 575,00</span>
             </div>
-            <div className="flex justify-between text-sm text-white/60">
-              <span>Valor real em produção:</span>
-              <span>R$ 575,00 + R$ 375/mês</span>
+            <div className="flex justify-between text-green-400">
+              <span>Desconto Especial:</span>
+              <span className="font-bold">- R$ 50,00</span>
+            </div>
+            <div className="flex justify-between text-sm text-white/60 pt-2">
+              <span>Mensalidade após hoje:</span>
+              <span>R$ 375,00/mês</span>
             </div>
           </div>
           <div className="border-t border-white/20 pt-4">
             <div className="flex justify-between text-xl font-bold">
               <span>Total Hoje:</span>
-              <span>R$ 5,00</span>
+              <span className="text-green-400">R$ 525,00</span>
             </div>
           </div>
         </div>
