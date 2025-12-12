@@ -87,7 +87,9 @@ export const Checkout = () => {
 
     try {
       // Preparar dados do pagamento
-      const valorPagamento = 525.00 // R$ 575,00 - R$ 50,00 de desconto
+      const taxaAdesao = 525.00 // R$ 575,00 - R$ 50,00 de desconto
+      const primeiraMensalidade = 375.00
+      const valorPagamento = taxaAdesao + primeiraMensalidade // Total: R$ 900,00
 
       const paymentData: PaymentData = {
         customer: {
@@ -169,14 +171,24 @@ export const Checkout = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Finalize Sua Contratação
           </h1>
-          <p className="text-xl text-white/80">
-            <span className="line-through opacity-60">R$ 575,00</span> por Apenas <span className="text-green-400 font-bold">R$ 525,00</span> <span className="font-bold">HOJE</span>
-          </p>
-          <p className="text-lg text-green-400 font-semibold mb-2">
-            Economize R$ 50,00 na Taxa de Adesão!
-          </p>
-          <p className="text-lg text-white/60">
-            depois passa a pagar R$ 375,00 mensalmente
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 inline-block">
+            <p className="text-lg text-white/80 mb-2">
+              Taxa de Adesão: <span className="line-through opacity-60">R$ 575,00</span> <span className="text-green-400 font-bold">R$ 525,00</span>
+            </p>
+            <p className="text-lg text-white/80 mb-3">
+              + Primeira Mensalidade: <span className="text-white font-bold">R$ 375,00</span>
+            </p>
+            <div className="border-t border-white/20 pt-3">
+              <p className="text-3xl md:text-4xl font-bold text-green-400">
+                Total Hoje: R$ 900,00
+              </p>
+            </div>
+            <p className="text-sm text-green-400 font-semibold mt-2">
+              Economize R$ 50,00 na Taxa de Adesão!
+            </p>
+          </div>
+          <p className="text-lg text-white/60 mt-4">
+            Após hoje, apenas R$ 375,00/mês
           </p>
         </div>
 
@@ -382,15 +394,23 @@ export const Checkout = () => {
               <span>Desconto Especial:</span>
               <span className="font-bold">- R$ 50,00</span>
             </div>
-            <div className="flex justify-between text-sm text-white/60 pt-2">
-              <span>Mensalidade após hoje:</span>
+            <div className="flex justify-between pt-2">
+              <span>Taxa de Adesão com desconto:</span>
+              <span className="font-bold">R$ 525,00</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Primeira Mensalidade:</span>
+              <span className="font-bold">R$ 375,00</span>
+            </div>
+            <div className="flex justify-between text-sm text-white/60 pt-2 border-t border-white/10 mt-2">
+              <span>Mensalidades seguintes:</span>
               <span>R$ 375,00/mês</span>
             </div>
           </div>
           <div className="border-t border-white/20 pt-4">
             <div className="flex justify-between text-xl font-bold">
               <span>Total Hoje:</span>
-              <span className="text-green-400">R$ 525,00</span>
+              <span className="text-green-400">R$ 900,00</span>
             </div>
           </div>
         </div>
