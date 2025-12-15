@@ -7,6 +7,21 @@
     <title>Dnotas - Serviços Contábeis Especializados</title>
     <meta name="description" content="Proteja seu negócio da malha fina com nossos serviços contábeis especializados. Mais de 300 clientes confiam em nós." />
 
+    <!-- Single Page Apps for GitHub Pages - Redirect Handler -->
+    <script>
+      // Recupera o redirect do 404.html
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://dnotas-contabilidade.com/" />
