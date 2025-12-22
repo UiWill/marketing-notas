@@ -702,9 +702,13 @@ export const LandingPage = () => {
 
                     <button
                       id="pricing-contratar-button"
-                      onClick={() => {
-                        // Redireciona direto para checkout - v2
-                        console.log('Navegando para checkout...')
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+
+                        // Redireciona direto para checkout - v3
+                        console.log('Botão de pricing clicado! Navegando para checkout...')
                         navigate('/checkout')
 
                         trackEvent('pricing_cta_clicked', { location: 'pricing_card' })
