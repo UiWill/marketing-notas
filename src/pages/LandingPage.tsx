@@ -97,22 +97,17 @@ export const LandingPage = () => {
           <div className="mt-6 text-center">
             <button
               onClick={() => {
-                // Redireciona direto para checkout
-                navigate('/checkout')
+                const pricingButton = document.getElementById('pricing-contratar-button')
+                pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
                 // Track to Supabase
-                trackEvent('cta_clicked', { location: 'below_video', target: 'checkout_direct' })
+                trackEvent('cta_clicked', { location: 'below_video', target: 'pricing_button' })
 
                 // Track to Facebook Pixel
                 fbTrackCTAClick({
                   cta_location: 'below_video',
                   cta_text: 'CLIQUE AQUI E RECEBA NOSSOS SERVIÇOS EXCLUSIVOS',
-                  target: 'checkout_direct',
-                })
-
-                fbTrackInitiateCheckout({
-                  value: 525,
-                  currency: 'BRL',
+                  target: 'pricing_button',
                 })
               }}
               className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-xl md:text-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl uppercase w-full md:w-auto"
@@ -296,20 +291,15 @@ export const LandingPage = () => {
                     <button
                       id="contratar-servico-button"
                       onClick={() => {
-                        // Redireciona direto para checkout
-                        navigate('/checkout')
+                        const pricingButton = document.getElementById('pricing-contratar-button')
+                        pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-                        trackEvent('cta_clicked', { location: 'main_cta', target: 'checkout_direct' })
+                        trackEvent('cta_clicked', { location: 'main_cta', target: 'pricing_button' })
 
                         fbTrackCTAClick({
                           cta_location: 'main_cta',
                           cta_text: 'CONTRATAR SERVIÇO AGORA',
-                          target: 'checkout_direct',
-                        })
-
-                        fbTrackInitiateCheckout({
-                          value: 525,
-                          currency: 'BRL',
+                          target: 'pricing_button',
                         })
                       }}
                       className="group relative bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-xl md:text-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-2xl mb-6 w-full md:w-auto"
@@ -510,15 +500,8 @@ export const LandingPage = () => {
                   </p>
                   <button
                     onClick={() => {
-                      // Redireciona direto para checkout
-                      navigate('/checkout')
-
-                      trackEvent('cta_clicked', { location: 'comparison_table', target: 'checkout_direct' })
-
-                      fbTrackInitiateCheckout({
-                        value: 525,
-                        currency: 'BRL',
-                      })
+                      const pricingButton = document.getElementById('pricing-contratar-button')
+                      pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                     }}
                     className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-5 px-10 rounded-full text-xl transition-all duration-300 transform hover:scale-105 shadow-xl"
                   >
@@ -583,15 +566,8 @@ export const LandingPage = () => {
                   </p>
                   <button
                     onClick={() => {
-                      // Redireciona direto para checkout
-                      navigate('/checkout')
-
-                      trackEvent('cta_clicked', { location: 'invoice_types', target: 'checkout_direct' })
-
-                      fbTrackInitiateCheckout({
-                        value: 525,
-                        currency: 'BRL',
-                      })
+                      const pricingButton = document.getElementById('pricing-contratar-button')
+                      pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                     }}
                     className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
                   >
@@ -802,15 +778,8 @@ export const LandingPage = () => {
                 </p>
                 <button
                   onClick={() => {
-                    // Redireciona direto para checkout
-                    navigate('/checkout')
-
-                    trackEvent('cta_clicked', { location: 'final_cta', target: 'checkout_direct' })
-
-                    fbTrackInitiateCheckout({
-                      value: 525,
-                      currency: 'BRL',
-                    })
+                    const pricingButton = document.getElementById('pricing-contratar-button')
+                    pricingButton?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                   }}
                   className="bg-black text-white font-bold py-6 px-10 rounded-full text-2xl hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 mb-6 w-full md:w-auto shadow-xl"
                 >
