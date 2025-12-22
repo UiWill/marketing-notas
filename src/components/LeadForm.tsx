@@ -1,8 +1,15 @@
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { User, Mail, Phone, DollarSign, ArrowRight, Loader2 } from 'lucide-react'
+import { User, Mail, Phone, ArrowRight, Loader2 } from 'lucide-react'
 import { useLeadCapture } from '@/hooks/useLeadCapture'
 import type { LeadFormData } from '@/types'
+import {
+  fbTrackFormStart,
+  fbTrackFormSubmit,
+  fbTrackLead,
+  fbTrackCompleteRegistration,
+  fbTrackConversion,
+} from '@/utils/facebookPixel'
 
 interface LeadFormProps {
   onSubmit?: (leadId: string) => void
@@ -28,21 +35,31 @@ export const LeadForm = ({ onSubmit, className = '' }: LeadFormProps) => {
     return value
   }
 
-  const formatCurrency = (value: string) => {
-    const numbers = value.replace(/\D/g, '')
-    const amount = parseInt(numbers) / 100
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(amount)
-  }
-
   const handleFormSubmit = async (data: LeadFormData) => {
     try {
       const lead = await submitLead({
         ...data,
         phone: data.phone.replace(/\D/g, ''),
         revenue: 0, // Valor padrão já que removemos o campo
+      })
+
+      // Track to Facebook Pixel - Lead captured
+      fbTrackFormSubmit({
+        form_name: 'lead_capture',
+        revenue: 0,
+      })
+
+      fbTrackLead({
+        value: 525,
+        currency: 'BRL',
+      })
+
+      fbTrackCompleteRegistration()
+
+      fbTrackConversion({
+        conversion_type: 'lead_captured',
+        value: 525,
+        currency: 'BRL',
       })
 
       // Se a prop onSubmit foi passada, chamar ela (para uso no modal)
@@ -55,6 +72,11 @@ export const LeadForm = ({ onSubmit, className = '' }: LeadFormProps) => {
     } catch (err) {
       console.error('Error submitting lead:', err)
     }
+  }
+
+  // Track form start when user focuses on first field
+  const handleFormStart = () => {
+    fbTrackFormStart()
   }
 
   return (
@@ -87,6 +109,7 @@ export const LeadForm = ({ onSubmit, className = '' }: LeadFormProps) => {
               id="name"
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors"
               placeholder="Seu nome completo"
+              onFocus={handleFormStart}
             />
           </div>
           {errors.name && (

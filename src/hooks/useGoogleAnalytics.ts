@@ -1,15 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 
-interface GoogleAnalyticsData {
-  activeUsers?: number
-  sessions?: any[]
-  pageviews?: any[]
-  trafficSources?: any[]
-  devices?: any[]
-  locations?: any[]
-}
-
 export const useGoogleAnalytics = (type: 'realtime' | 'sessions' | 'pageviews' | 'traffic_sources' | 'devices' | 'locations', options?: {
   startDate?: string
   endDate?: string

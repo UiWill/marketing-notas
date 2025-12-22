@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
+import {
+  fbTrackSectionView,
+  fbTrackActionSequence,
+  fbTrackScrollDepth,
+  fbTrackTimeOnPage,
+} from '@/utils/facebookPixel'
 
 // Gera ou recupera um session_id único do sessionStorage
 const getSessionId = (): string => {
@@ -135,15 +141,30 @@ export const usePageTracking = (options: PageTrackingOptions = {}) => {
   useEffect(() => {
     if (!trackScroll || !pageViewId) return
 
-    const handleScroll = () => {
-      if (scrolledToBottom.current) return
+    let lastScrollDepth = 0
 
+    const handleScroll = () => {
       const scrollPercentage =
         (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight
 
-      if (scrollPercentage >= 0.95) {
+      const currentDepth = Math.floor(scrollPercentage * 100)
+
+      // Track scroll depth milestones (25%, 50%, 75%, 100%)
+      if (currentDepth >= 25 && lastScrollDepth < 25) {
+        fbTrackScrollDepth({ depth: 25 })
+        lastScrollDepth = 25
+      } else if (currentDepth >= 50 && lastScrollDepth < 50) {
+        fbTrackScrollDepth({ depth: 50 })
+        lastScrollDepth = 50
+      } else if (currentDepth >= 75 && lastScrollDepth < 75) {
+        fbTrackScrollDepth({ depth: 75 })
+        lastScrollDepth = 75
+      }
+
+      if (scrollPercentage >= 0.95 && !scrolledToBottom.current) {
         scrolledToBottom.current = true
         updatePageView({ scrolled_to_bottom: true })
+        fbTrackScrollDepth({ depth: 100 })
       }
     }
 
@@ -157,6 +178,9 @@ export const usePageTracking = (options: PageTrackingOptions = {}) => {
 
     const handleBeforeUnload = () => {
       const timeOnPage = Math.floor((Date.now() - pageLoadTime.current) / 1000)
+
+      // Track time on page to Facebook
+      fbTrackTimeOnPage({ seconds: timeOnPage })
 
       // Usa sendBeacon para enviar dados mesmo quando a página está sendo fechada
       const payload = {
@@ -195,12 +219,23 @@ export const usePageTracking = (options: PageTrackingOptions = {}) => {
     }
   }
 
-  // Função para rastrear eventos customizados
+  // Estado para tracking de sequência de eventos
+  const eventSequence = useRef<number>(0)
+  const lastEvent = useRef<{ name: string; timestamp: number } | null>(null)
+
+  // Função para rastrear eventos customizados com sequenciamento
   const trackEvent = async (
     eventName: string,
     properties?: Record<string, any>
   ) => {
     try {
+      const now = Date.now()
+      const timeSincePrevious = lastEvent.current
+        ? Math.floor((now - lastEvent.current.timestamp) / 1000)
+        : null
+
+      eventSequence.current += 1
+
       const { error } = await supabase
         .from('custom_events')
         .insert({
@@ -208,11 +243,60 @@ export const usePageTracking = (options: PageTrackingOptions = {}) => {
           event_name: eventName,
           event_properties: properties || {},
           page_path: window.location.pathname,
+          event_sequence: eventSequence.current,
+          previous_event: lastEvent.current?.name || null,
+          time_since_previous_event: timeSincePrevious,
         })
 
       if (error) console.error('Erro ao rastrear evento:', error)
+
+      // Track action sequence to Facebook
+      fbTrackActionSequence({
+        action_name: eventName,
+        sequence_number: eventSequence.current,
+        previous_action: lastEvent.current?.name,
+        time_since_previous: timeSincePrevious || undefined,
+      })
+
+      // Atualiza último evento
+      lastEvent.current = { name: eventName, timestamp: now }
     } catch (error) {
       console.error('Erro ao rastrear evento:', error)
+    }
+  }
+
+  // Função para rastrear visualização de seção
+  const trackSectionView = async (
+    sectionId: string,
+    timeSpent: number
+  ) => {
+    if (!pageViewId) return
+
+    try {
+      const updates: any = {}
+      updates[`viewed_${sectionId}`] = true
+      updates[`time_on_${sectionId}`] = timeSpent
+
+      const { error } = await supabase
+        .from('page_views')
+        .update(updates)
+        .eq('id', pageViewId)
+
+      if (error) console.error('Erro ao rastrear seção:', error)
+
+      // Track to Facebook Pixel
+      fbTrackSectionView({
+        section: sectionId,
+        time_spent: timeSpent,
+      })
+
+      // Também rastreia como evento customizado
+      await trackEvent(`section_viewed_${sectionId}`, {
+        section: sectionId,
+        time_spent: timeSpent,
+      })
+    } catch (error) {
+      console.error('Erro ao rastrear seção:', error)
     }
   }
 
@@ -221,5 +305,6 @@ export const usePageTracking = (options: PageTrackingOptions = {}) => {
     pageViewId,
     trackEvent,
     updatePageView,
+    trackSectionView,
   }
 }

@@ -1,10 +1,87 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createHash } from 'https://deno.land/std@0.168.0/hash/mod.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, asaas-access-token, x-asaas-signature',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
+
+// Facebook Conversions API Config
+const FB_PIXEL_ID = '1279949890819385'
+const FB_ACCESS_TOKEN = Deno.env.get('FACEBOOK_ACCESS_TOKEN') ?? ''
+
+// Função para hash de dados sensíveis (PII) conforme requisito do Facebook
+function hashSHA256(text: string): string {
+  const hash = createHash('sha256')
+  hash.update(text.toLowerCase().trim())
+  return hash.toString()
+}
+
+// Enviar evento para Facebook Conversions API
+async function sendFacebookConversion(eventData: {
+  eventName: string
+  email: string
+  phone: string
+  name: string
+  value?: number
+  currency?: string
+  eventId: string
+}) {
+  if (!FB_ACCESS_TOKEN) {
+    console.warn('FACEBOOK_ACCESS_TOKEN não configurado. Eventos não serão enviados ao Facebook.')
+    return
+  }
+
+  const url = `https://graph.facebook.com/v18.0/${FB_PIXEL_ID}/events`
+
+  const userData: any = {
+    em: hashSHA256(eventData.email),
+    ph: hashSHA256(eventData.phone.replace(/\D/g, '')),
+    fn: hashSHA256(eventData.name.split(' ')[0]),
+    ln: hashSHA256(eventData.name.split(' ').slice(-1)[0])
+  }
+
+  const eventPayload = {
+    data: [
+      {
+        event_name: eventData.eventName,
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: eventData.eventId,
+        event_source_url: 'https://dnotas-contabilidade.com',
+        action_source: 'website',
+        user_data: userData,
+        custom_data: eventData.value ? {
+          value: eventData.value,
+          currency: eventData.currency || 'BRL'
+        } : undefined
+      }
+    ],
+    access_token: FB_ACCESS_TOKEN
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventPayload)
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      console.error('Erro ao enviar evento para Facebook:', result)
+    } else {
+      console.log(`✅ Evento ${eventData.eventName} enviado ao Facebook com sucesso`)
+    }
+
+    return result
+  } catch (error) {
+    console.error('Erro ao chamar Facebook Conversions API:', error)
+  }
 }
 
 serve(async (req) => {
@@ -114,9 +191,25 @@ serve(async (req) => {
 
     console.log(`Lead ${lead.id} atualizado com sucesso. Status: ${updateData.payment_status}`)
 
-    // Se o pagamento foi confirmado, enviar WhatsApp
+    // Processar eventos e enviar ao Facebook
     if (event === 'PAYMENT_RECEIVED' || event === 'PAYMENT_CONFIRMED') {
       console.log(`✅ PAGAMENTO CONFIRMADO! Lead: ${lead.name} (${lead.email})`)
+
+      // 🎯 ENVIAR EVENTO DE COMPRA PARA O FACEBOOK
+      try {
+        await sendFacebookConversion({
+          eventName: 'Purchase',
+          email: lead.email,
+          phone: lead.phone,
+          name: lead.name,
+          value: 525, // Valor do produto
+          currency: 'BRL',
+          eventId: `purchase_${payment.id}` // ID único para deduplicação
+        })
+        console.log('✅ Evento Purchase enviado ao Facebook')
+      } catch (fbError) {
+        console.error('Erro ao enviar evento Purchase ao Facebook:', fbError)
+      }
 
       // Enviar WhatsApp para o cliente
       try {
@@ -150,7 +243,7 @@ Em breve nossa equipe entrará em contato.`
 *E-mail:* ${lead.email}
 *Telefone:* ${lead.phone}
 *Método:* ${lead.payment_method === 'PIX' ? 'PIX' : lead.payment_method === 'CREDIT_CARD' ? 'Cartão de Crédito' : 'Boleto'}
-*Valor:* R$ 5,00
+*Valor:* R$ 525,00
 
 Acesse o painel para mais detalhes! 💰`
 
@@ -168,6 +261,44 @@ Acesse o painel para mais detalhes! 💰`
         console.log(`WhatsApp enviado para proprietário`)
       } catch (whatsappError) {
         console.error('Erro ao enviar WhatsApp para proprietário:', whatsappError)
+      }
+    }
+
+    // 🎯 ENVIAR EVENTO DE CANCELAMENTO/VENCIMENTO PARA O FACEBOOK
+    if (event === 'PAYMENT_OVERDUE') {
+      console.log(`⚠️ PAGAMENTO VENCIDO! Lead: ${lead.name} (${lead.email})`)
+
+      try {
+        await sendFacebookConversion({
+          eventName: 'PaymentOverdue', // Evento customizado
+          email: lead.email,
+          phone: lead.phone,
+          name: lead.name,
+          eventId: `overdue_${payment.id}`
+        })
+        console.log('✅ Evento PaymentOverdue enviado ao Facebook')
+      } catch (fbError) {
+        console.error('Erro ao enviar evento PaymentOverdue ao Facebook:', fbError)
+      }
+    }
+
+    // 🎯 ENVIAR EVENTO DE ESTORNO PARA O FACEBOOK
+    if (event === 'PAYMENT_REFUNDED') {
+      console.log(`💰 PAGAMENTO ESTORNADO! Lead: ${lead.name} (${lead.email})`)
+
+      try {
+        await sendFacebookConversion({
+          eventName: 'PaymentRefunded', // Evento customizado
+          email: lead.email,
+          phone: lead.phone,
+          name: lead.name,
+          value: 525,
+          currency: 'BRL',
+          eventId: `refund_${payment.id}`
+        })
+        console.log('✅ Evento PaymentRefunded enviado ao Facebook')
+      } catch (fbError) {
+        console.error('Erro ao enviar evento PaymentRefunded ao Facebook:', fbError)
       }
     }
 

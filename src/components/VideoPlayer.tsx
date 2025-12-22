@@ -6,6 +6,7 @@ import { useVideoTracking } from '@/hooks/useVideoTracking'
 interface VideoPlayerProps {
   url: string
   leadId?: string
+  sessionId?: string
   onTimeUpdate?: (currentTime: number) => void
   showControlsAfter?: number // seconds
   autoPlay?: boolean
@@ -15,9 +16,9 @@ interface VideoPlayerProps {
 export const VideoPlayer = ({
   url,
   leadId,
+  sessionId,
   onTimeUpdate,
   showControlsAfter = 0,
-  autoPlay = true,
   className = ''
 }: VideoPlayerProps) => {
   const [playing, setPlaying] = useState(true) // Autoplay ativado
@@ -29,7 +30,11 @@ export const VideoPlayer = ({
   const [currentTime, setCurrentTime] = useState(0)
 
   const playerRef = useRef<ReactPlayer>(null)
-  const { updateProgress, handlePlay, handlePause, handleEnded, handleDrop } = useVideoTracking({ leadId })
+  const { updateProgress, handlePlay, handleEnded, handleDrop } = useVideoTracking({
+    leadId,
+    sessionId,
+    videoDuration: duration,
+  })
 
   // Ativar som quando usuário clicar no aviso
   const handleEnableSound = useCallback(() => {
@@ -62,7 +67,7 @@ export const VideoPlayer = ({
       setShowControls(true)
     }
 
-    updateProgress(state.played)
+    updateProgress(state.played, state.playedSeconds)
     onTimeUpdate?.(state.playedSeconds)
   }, [updateProgress, onTimeUpdate, showControls, showControlsAfter])
 

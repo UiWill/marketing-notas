@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CheckCircle, MessageCircle, Loader2, Smartphone, FileText, Copy, Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { initFacebookPixel, fbTrackPageView } from '@/utils/facebookPixel'
 
 export const ThankYou = () => {
   const [searchParams] = useSearchParams()
@@ -17,6 +18,10 @@ export const ThankYou = () => {
 
   // Monitorar status do pagamento em tempo real
   useEffect(() => {
+    // Initialize Facebook Pixel
+    initFacebookPixel()
+    fbTrackPageView()
+
     if (paymentId && leadId && method === 'PIX') {
       // Carregar dados iniciais
       loadPaymentData()

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Shield, CheckCircle, Users, Clock, Award, FileText, CreditCard, Building, MessageCircle } from 'lucide-react'
 import { VideoPlayer } from '@/components/VideoPlayer'
+import { LeadForm } from '@/components/LeadForm'
 import { ScrollAnimation } from '@/components/ScrollAnimation'
 import { trackPageView } from '@/utils/analytics'
 import { usePageTracking } from '@/hooks/usePageTracking'
@@ -15,10 +15,10 @@ import {
   fbTrackInitiateCheckout,
 } from '@/utils/facebookPixel'
 
-export const LandingPage = () => {
-  const navigate = useNavigate()
+export const LandingPageWithForm = () => {
   const [leadId] = useState<string | undefined>(undefined)
   const [showContent] = useState(true) // Página sempre liberada
+  const [showModal, setShowModal] = useState(false)
 
   // Page tracking com visitantes anônimos
   const { updatePageView, trackEvent, pageViewId, trackSectionView } = usePageTracking({
@@ -41,7 +41,7 @@ export const LandingPage = () => {
     fbTrackPageView()
 
     // Track page view in analytics
-    trackPageView('/')
+    trackPageView('/with-form')
   }, [])
 
   const handleVideoTimeUpdate = (time: number) => {
@@ -65,12 +65,12 @@ export const LandingPage = () => {
       <header data-section-id="hero" className="container mx-auto px-4 py-6 bg-gradient-to-br from-purple-900/80 to-blue-900/80">
         <div className="text-center">
           {/* VERSÃO A - Copy Original da Cliente (Para Testes A/B) */}
-          {/* 
+          {/*
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
             Se você fatura mais de <span className="text-accent-400">12.000 por mês</span> e não emite NF, <span className="text-red-400">cuidado...</span>
           </h1>
           */}
-          
+
           {/* VERSÃO B - Título Atual (Ativo) */}
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
             Você Pode Estar Correndo <span className="text-red-400">Sérios Riscos Fiscais</span>
@@ -703,15 +703,14 @@ export const LandingPage = () => {
                     <button
                       id="pricing-contratar-button"
                       onClick={() => {
-                        // Redireciona direto para checkout
-                        navigate('/checkout')
+                        setShowModal(true)
 
                         trackEvent('pricing_cta_clicked', { location: 'pricing_card' })
 
                         fbTrackCTAClick({
                           cta_location: 'pricing_card',
                           cta_text: 'CONTRATAR SERVIÇO AGORA',
-                          target: 'checkout_direct',
+                          target: 'modal_form',
                         })
 
                         fbTrackInitiateCheckout({
@@ -832,6 +831,28 @@ export const LandingPage = () => {
             </ScrollAnimation>
           </section>
         </>
+      )}
+
+      {/* Modal de Captura de Lead */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 relative my-8">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-3xl font-bold"
+            >
+              ×
+            </button>
+
+            <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+              Receba Nossos Serviços Exclusivos
+            </h2>
+
+            <LeadForm
+              className="shadow-none"
+            />
+          </div>
+        </div>
       )}
 
       {/* Footer */}

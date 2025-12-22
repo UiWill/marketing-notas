@@ -1,4 +1,5 @@
-import { Activity, Users, Eye, TrendingUp, Smartphone, MapPin } from 'lucide-react'
+import { useState } from 'react'
+import { Activity, Users, Eye, TrendingUp, Smartphone, MapPin, Calendar } from 'lucide-react'
 import {
   useGoogleAnalyticsRealtime,
   useGoogleAnalyticsSessions,
@@ -8,24 +9,42 @@ import {
   useGoogleAnalyticsLocations
 } from '@/hooks/useGoogleAnalytics'
 
+type DateRange = {
+  startDate: string
+  endDate: string
+  label: string
+}
+
+const DATE_RANGES: Record<string, DateRange> = {
+  today: { startDate: 'today', endDate: 'today', label: 'Hoje' },
+  yesterday: { startDate: 'yesterday', endDate: 'yesterday', label: 'Ontem' },
+  last7days: { startDate: '7daysAgo', endDate: 'today', label: 'Últimos 7 dias' },
+  last30days: { startDate: '30daysAgo', endDate: 'today', label: 'Últimos 30 dias' },
+  thisMonth: { startDate: '1monthAgo', endDate: 'today', label: 'Este mês' },
+  allTime: { startDate: '2020-01-01', endDate: 'today', label: 'Todo o período' },
+}
+
 export const GoogleAnalyticsSection = () => {
+  const [selectedRange, setSelectedRange] = useState<string>('last7days')
+  const dateRange = DATE_RANGES[selectedRange]
+
   // Fetch real-time data (updates every minute)
   const { data: realtimeData, loading: realtimeLoading } = useGoogleAnalyticsRealtime(60000)
 
-  // Fetch sessions data (last 7 days)
-  const { data: sessionsData, loading: sessionsLoading } = useGoogleAnalyticsSessions('7daysAgo', 'today')
+  // Fetch sessions data with selected date range
+  const { data: sessionsData, loading: sessionsLoading } = useGoogleAnalyticsSessions(dateRange.startDate, dateRange.endDate)
 
-  // Fetch pageviews
-  const { data: pageviewsData, loading: pageviewsLoading } = useGoogleAnalyticsPageviews('7daysAgo', 'today')
+  // Fetch pageviews with selected date range
+  const { data: pageviewsData, loading: pageviewsLoading } = useGoogleAnalyticsPageviews(dateRange.startDate, dateRange.endDate)
 
-  // Fetch traffic sources
-  const { data: trafficData, loading: trafficLoading } = useGoogleAnalyticsTrafficSources('30daysAgo', 'today')
+  // Fetch traffic sources with selected date range
+  const { data: trafficData, loading: trafficLoading } = useGoogleAnalyticsTrafficSources(dateRange.startDate, dateRange.endDate)
 
-  // Fetch devices
-  const { data: devicesData, loading: devicesLoading } = useGoogleAnalyticsDevices('30daysAgo', 'today')
+  // Fetch devices with selected date range
+  const { data: devicesData, loading: devicesLoading } = useGoogleAnalyticsDevices(dateRange.startDate, dateRange.endDate)
 
-  // Fetch locations
-  const { data: locationsData, loading: locationsLoading } = useGoogleAnalyticsLocations('30daysAgo', 'today')
+  // Fetch locations with selected date range
+  const { data: locationsData, loading: locationsLoading } = useGoogleAnalyticsLocations(dateRange.startDate, dateRange.endDate)
 
   // Calculate totals from sessions data
   const calculateSessionsTotals = () => {
@@ -79,14 +98,39 @@ export const GoogleAnalyticsSection = () => {
   return (
     <div className="space-y-6 mb-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Google Analytics</h2>
           <p className="text-gray-600">Dados em tempo real e métricas de tráfego</p>
         </div>
-        <div className="flex items-center gap-2 text-green-600">
-          <Activity className="w-5 h-5 animate-pulse" />
-          <span className="text-sm font-medium">Ao vivo</span>
+        <div className="flex items-center gap-4">
+          {/* Date Range Selector */}
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <select
+              value={selectedRange}
+              onChange={(e) => setSelectedRange(e.target.value)}
+              className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent cursor-pointer appearance-none"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 0.5rem center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '1.5em 1.5em',
+              }}
+            >
+              {Object.entries(DATE_RANGES).map(([key, range]) => (
+                <option key={key} value={key}>
+                  {range.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Live Indicator */}
+          <div className="flex items-center gap-2 text-green-600">
+            <Activity className="w-5 h-5 animate-pulse" />
+            <span className="text-sm font-medium">Ao vivo</span>
+          </div>
         </div>
       </div>
 
@@ -128,9 +172,9 @@ export const GoogleAnalyticsSection = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Sessões (7 dias)</p>
+              <p className="text-sm font-medium text-gray-600">Sessões</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{totals.sessions.toLocaleString('pt-BR')}</p>
-              <p className="text-xs text-gray-500 mt-2">Últimos 7 dias</p>
+              <p className="text-xs text-gray-500 mt-2">{dateRange.label}</p>
             </div>
             <Eye className="h-10 w-10 text-blue-500" />
           </div>
@@ -142,7 +186,7 @@ export const GoogleAnalyticsSection = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">Usuários Únicos</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{totals.users.toLocaleString('pt-BR')}</p>
-              <p className="text-xs text-gray-500 mt-2">Últimos 7 dias</p>
+              <p className="text-xs text-gray-500 mt-2">{dateRange.label}</p>
             </div>
             <Users className="h-10 w-10 text-purple-500" />
           </div>
@@ -154,7 +198,7 @@ export const GoogleAnalyticsSection = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">Taxa de Rejeição</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{totals.bounceRate}%</p>
-              <p className="text-xs text-gray-500 mt-2">Média (7 dias)</p>
+              <p className="text-xs text-gray-500 mt-2">Média - {dateRange.label}</p>
             </div>
             <TrendingUp className="h-10 w-10 text-orange-500" />
           </div>

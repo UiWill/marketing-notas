@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Loader2, CheckCircle, CreditCard, Smartphone, FileText, AlertCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import {
+  initFacebookPixel,
+  fbTrackInitiateCheckout,
+  fbTrackAddPaymentInfo,
+  fbTrackPurchase
+} from '@/utils/facebookPixel'
 
 interface PaymentData {
   customer: {
@@ -34,12 +40,19 @@ export const Checkout = () => {
   })
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState('')
+  const [testMode, setTestMode] = useState(false)
+  const [testPixData, setTestPixData] = useState<any>(null)
+  const [testProcessing, setTestProcessing] = useState(false)
 
   useEffect(() => {
     if (!leadId) {
       navigate('/')
       return
     }
+
+    // Initialize Facebook Pixel
+    initFacebookPixel()
+
     loadLeadData()
   }, [leadId])
 
@@ -54,6 +67,12 @@ export const Checkout = () => {
       if (error) throw error
       setLeadData(data)
       setLoading(false)
+
+      // Track InitiateCheckout when checkout page loads with lead data
+      fbTrackInitiateCheckout({
+        value: 525,
+        currency: 'BRL',
+      })
     } catch (err) {
       console.error('Erro ao carregar dados:', err)
       navigate('/')
@@ -81,9 +100,69 @@ export const Checkout = () => {
     return numbers.replace(/(\d{5})(\d{3})/, '$1-$2')
   }
 
+  const createTestPayment = async () => {
+    setTestProcessing(true)
+    setError('')
+
+    // Validar se o CPF foi preenchido
+    if (!cpfCnpj) {
+      setError('Por favor, preencha o CPF/CNPJ antes de criar o pagamento de teste')
+      setTestProcessing(false)
+      return
+    }
+
+    try {
+      const SUPABASE_URL = 'https://xtxuoqcunnlccnujbbhk.supabase.co'
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0eHVvcWN1bm5sY2NudWpiYmhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5NzI3NDMsImV4cCI6MjA3NDU0ODc0M30.MQ96oAiZNnJXNQJmordG78C_s8c6wSGGtTzgva00-nQ'
+
+      const testPaymentData = {
+        customer: {
+          name: 'TESTE - ' + leadData.name,
+          email: leadData.email,
+          cpfCnpj: cpfCnpj.replace(/\D/g, ''), // Usar o CPF que o usuário digitou
+          phone: leadData.phone
+        },
+        billingType: 'PIX',
+        value: 5.00, // R$ 5,00 para teste
+        dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 1 dia
+        leadId: leadId
+      }
+
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/asaas-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify(testPaymentData)
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Erro ao criar pagamento de teste')
+      }
+
+      setTestPixData(result)
+      setTestMode(true)
+      console.log('✅ Pagamento de teste criado:', result)
+    } catch (err: any) {
+      console.error('Erro ao criar pagamento de teste:', err)
+      setError('Erro ao criar pagamento de teste: ' + err.message)
+    } finally {
+      setTestProcessing(false)
+    }
+  }
+
   const processPayment = async () => {
     setProcessing(true)
     setError('')
+
+    // Track AddPaymentInfo when user clicks to process payment
+    fbTrackAddPaymentInfo({
+      value: 525,
+      currency: 'BRL',
+    })
 
     try {
       // Preparar dados do pagamento
@@ -143,6 +222,12 @@ export const Checkout = () => {
         throw new Error(result.error || 'Erro ao processar pagamento')
       }
 
+      // Track Purchase event when payment is successful
+      fbTrackPurchase({
+        value: 525,
+        currency: 'BRL',
+      })
+
       // A Edge Function já atualiza o banco de dados, apenas redirecionar
       navigate(`/obrigado?paymentId=${result.id}&method=${selectedPayment}&leadId=${leadId}`)
     } catch (err: any) {
@@ -164,6 +249,97 @@ export const Checkout = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Test Button - Fixed Position */}
+        <button
+          onClick={createTestPayment}
+          disabled={testProcessing || !leadData || !cpfCnpj}
+          className="fixed top-4 right-4 bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-400 text-black font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg z-50"
+          title={!cpfCnpj ? 'Preencha o CPF/CNPJ primeiro' : 'Criar pagamento de teste de R$ 5,00'}
+        >
+          {testProcessing ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Criando...
+            </>
+          ) : (
+            <>
+              🧪 TESTE R$ 5,00
+            </>
+          )}
+        </button>
+
+        {/* Test PIX Modal */}
+        {testMode && testPixData && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full relative">
+              <button
+                onClick={() => {
+                  setTestMode(false)
+                  setTestPixData(null)
+                }}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+                🧪 Pagamento de Teste
+              </h2>
+
+              <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6">
+                <p className="text-yellow-800 font-semibold text-center">
+                  Valor: R$ 5,00
+                </p>
+                <p className="text-yellow-700 text-sm text-center mt-1">
+                  Pagamento ID: {testPixData.id}
+                </p>
+              </div>
+
+              {testPixData.encodedImage && (
+                <div className="bg-white p-4 rounded-lg border-2 border-gray-200 mb-4">
+                  <img
+                    src={`data:image/png;base64,${testPixData.encodedImage}`}
+                    alt="QR Code PIX"
+                    className="w-full h-auto"
+                  />
+                </div>
+              )}
+
+              {testPixData.payload && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Código PIX Copia e Cola:
+                  </label>
+                  <div className="bg-gray-50 p-3 rounded-lg border border-gray-300 break-all text-xs">
+                    {testPixData.payload}
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(testPixData.payload)
+                      alert('Código PIX copiado!')
+                    }}
+                    className="mt-2 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg"
+                  >
+                    📋 Copiar Código PIX
+                  </button>
+                </div>
+              )}
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                <p className="text-blue-800 text-sm">
+                  <strong>Como testar:</strong>
+                </p>
+                <ol className="text-blue-700 text-sm mt-2 space-y-1 list-decimal list-inside">
+                  <li>Pague este PIX no ambiente Sandbox do Asaas</li>
+                  <li>Aguarde o webhook disparar</li>
+                  <li>Verifique os logs no Supabase</li>
+                  <li>Verifique o evento no Facebook Events Manager</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">

@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Users, TrendingUp, PlayCircle, Target, Eye, Clock, Phone, Mail, DollarSign, MousePointer, FileCheck, Globe } from 'lucide-react'
+import { Users, TrendingUp, PlayCircle, Target, Eye, Clock, Phone, Mail, DollarSign, MousePointer, FileCheck, Globe, Lock } from 'lucide-react'
 import { GoogleAnalyticsSection } from '@/components/GoogleAnalyticsSection'
+import { VideoRetentionChart } from '@/components/VideoRetentionChart'
+import { SectionAnalyticsCard } from '@/components/SectionAnalyticsCard'
+import { ActionFunnelChart } from '@/components/ActionFunnelChart'
+import { VideoDropoffChart } from '@/components/VideoDropoffChart'
 import type { Lead, AnalyticsData, ConversionFunnel, TrafficSource } from '@/types'
+
+const DASHBOARD_PASSWORD = 'DnotasEli2020*'
 
 export const Dashboard = () => {
   const [leads, setLeads] = useState<Lead[]>([])
@@ -12,9 +18,24 @@ export const Dashboard = () => {
   const [loading, setLoading] = useState(true)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
 
+  // Password protection states
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [password, setPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+
+  // Check if already authenticated on mount
   useEffect(() => {
-    fetchData()
+    const authenticated = sessionStorage.getItem('dashboard_authenticated')
+    if (authenticated === 'true') {
+      setIsAuthenticated(true)
+    }
   }, [])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchData()
+    }
+  }, [isAuthenticated])
 
   const fetchData = async () => {
     try {
@@ -135,6 +156,64 @@ export const Dashboard = () => {
     }
   }
 
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (password === DASHBOARD_PASSWORD) {
+      setIsAuthenticated(true)
+      sessionStorage.setItem('dashboard_authenticated', 'true')
+      setPasswordError('')
+    } else {
+      setPasswordError('Senha incorreta. Tente novamente.')
+      setPassword('')
+    }
+  }
+
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center px-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-lg shadow-2xl p-8">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
+                <Lock className="w-8 h-8 text-primary-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Dashboard Dnotas</h2>
+              <p className="text-gray-600">Digite a senha para acessar o dashboard de marketing</p>
+            </div>
+
+            <form onSubmit={handlePasswordSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Senha de Acesso
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Digite a senha"
+                  required
+                />
+                {passwordError && (
+                  <p className="mt-2 text-sm text-red-600">{passwordError}</p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-primary-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
+              >
+                Acessar Dashboard
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -159,6 +238,29 @@ export const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Google Analytics Section */}
         <GoogleAnalyticsSection />
+
+        {/* Divider */}
+        <div className="border-t border-gray-200 my-8"></div>
+
+        {/* Advanced Analytics Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Analytics Avançadas</h2>
+          <p className="text-gray-600 mb-6">
+            Análises detalhadas de comportamento do usuário, retenção de vídeo e funil de conversão
+          </p>
+
+          {/* Video Analytics */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <VideoRetentionChart />
+            <VideoDropoffChart />
+          </div>
+
+          {/* Section & Funnel Analytics */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <SectionAnalyticsCard />
+            <ActionFunnelChart />
+          </div>
+        </div>
 
         {/* Divider */}
         <div className="border-t border-gray-200 my-8"></div>
