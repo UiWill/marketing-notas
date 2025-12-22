@@ -31,7 +31,8 @@
       "Bash(dir:*)",
       "Bash(copy \"C:\\ERP_SISTEMAS\\Landepage ELI\\dist\\D.JPG\" \"C:\\ERP_SISTEMAS\\Landepage ELI\\public\\D.JPG\")",
       "Bash(cp:*)",
-      "Bash(gh run:*)"
+      "Bash(gh run:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []
