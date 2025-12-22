@@ -45,8 +45,10 @@ export const Checkout = () => {
   const [testProcessing, setTestProcessing] = useState(false)
 
   useEffect(() => {
+    // Permitir acesso ao checkout mesmo sem leadId
+    // Se não houver leadId, o usuário preencherá os dados diretamente no checkout
     if (!leadId) {
-      navigate('/')
+      setLoading(false)
       return
     }
 
