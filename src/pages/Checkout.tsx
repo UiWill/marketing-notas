@@ -5,9 +5,12 @@ import { supabase } from '@/lib/supabase'
 import {
   initFacebookPixel,
   fbTrackInitiateCheckout,
-  fbTrackAddPaymentInfo,
-  fbTrackPurchase
+  fbTrackAddPaymentInfo
 } from '@/utils/facebookPixel'
+import {
+  gaTrackBeginCheckout,
+  gaTrackAddPaymentInfo
+} from '@/utils/googleAnalytics'
 
 interface PaymentData {
   customer: {
@@ -72,6 +75,12 @@ export const Checkout = () => {
         value: 525,
         currency: 'BRL',
       })
+
+      // Track Google Analytics begin_checkout
+      gaTrackBeginCheckout({
+        value: 525,
+        currency: 'BRL'
+      })
     } catch (err) {
       console.error('Erro ao carregar dados:', err)
       navigate('/')
@@ -107,6 +116,13 @@ export const Checkout = () => {
     fbTrackAddPaymentInfo({
       value: 525,
       currency: 'BRL',
+    })
+
+    // Track Google Analytics add_payment_info
+    gaTrackAddPaymentInfo({
+      value: 525,
+      currency: 'BRL',
+      payment_type: selectedPayment
     })
 
     try {
@@ -167,13 +183,7 @@ export const Checkout = () => {
         throw new Error(result.error || 'Erro ao processar pagamento')
       }
 
-      // Track Purchase event when payment is successful
-      fbTrackPurchase({
-        value: 525,
-        currency: 'BRL',
-      })
-
-      // A Edge Function já atualiza o banco de dados, apenas redirecionar
+      // Redirecionar para página de obrigado (evento Purchase será disparado lá)
       navigate(`/obrigado?paymentId=${result.id}&method=${selectedPayment}&leadId=${leadId}`)
     } catch (err: any) {
       console.error('Erro ao processar pagamento:', err)

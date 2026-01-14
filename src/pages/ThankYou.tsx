@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CheckCircle, MessageCircle, Loader2, Smartphone, FileText, Copy, Check } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { initFacebookPixel, fbTrackPageView } from '@/utils/facebookPixel'
+import { initFacebookPixel, fbTrackPageView, fbTrackPurchase } from '@/utils/facebookPixel'
+import { gaTrackPurchase } from '@/utils/googleAnalytics'
 
 export const ThankYou = () => {
   const [searchParams] = useSearchParams()
@@ -21,6 +22,22 @@ export const ThankYou = () => {
     // Initialize Facebook Pixel
     initFacebookPixel()
     fbTrackPageView()
+
+    // Disparar evento de Purchase para rastreamento de conversão do Facebook e Google
+    if (paymentId) {
+      fbTrackPurchase({
+        value: 525,
+        currency: 'BRL'
+      })
+
+      // Track Google Analytics purchase
+      gaTrackPurchase({
+        transaction_id: paymentId,
+        value: 525,
+        currency: 'BRL',
+        payment_type: method || 'unknown'
+      })
+    }
 
     if (paymentId && leadId && method === 'PIX') {
       // Carregar dados iniciais
