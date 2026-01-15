@@ -38,52 +38,95 @@ serve(async (req) => {
   }
 
   try {
-    const { customer, billingType, value, dueDate, creditCard, creditCardHolderInfo, leadId } = await req.json()
+    const { customer, billingType, value, dueDate, creditCard, creditCardHolderInfo, leadId, companiesCount = 1, additionalCnpjs = [] } = await req.json()
 
-    // 1. Criar ou buscar cliente no Asaas
-    let asaasCustomer
-    try {
-      const existingCustomers = await asaasRequest(`/customers?cpfCnpj=${customer.cpfCnpj}`)
-      if (existingCustomers.data && existingCustomers.data.length > 0) {
-        asaasCustomer = existingCustomers.data[0]
-      } else {
-        asaasCustomer = await asaasRequest('/customers', {
-          method: 'POST',
-          body: JSON.stringify(customer)
-        })
+    const valuePerCompany = 525.00 // Valor por empresa
+    const payments: any[] = []
+    const allPaymentIds: string[] = []
+
+    // Função auxiliar para criar ou buscar cliente
+    async function getOrCreateCustomer(customerData: any) {
+      try {
+        const existingCustomers = await asaasRequest(`/customers?cpfCnpj=${customerData.cpfCnpj}`)
+        if (existingCustomers.data && existingCustomers.data.length > 0) {
+          return existingCustomers.data[0]
+        }
+      } catch (err) {
+        // Cliente não encontrado, criar novo
       }
-    } catch (err) {
-      asaasCustomer = await asaasRequest('/customers', {
+      return await asaasRequest('/customers', {
         method: 'POST',
-        body: JSON.stringify(customer)
+        body: JSON.stringify(customerData)
       })
     }
 
-    // 2. Criar cobrança
-    const paymentData: any = {
-      customer: asaasCustomer.id,
+    // 1. Criar cobrança para a empresa principal (CNPJ do cliente)
+    const mainCustomer = await getOrCreateCustomer(customer)
+
+    const mainPaymentData: any = {
+      customer: mainCustomer.id,
       billingType,
-      value,
+      value: valuePerCompany,
       dueDate,
-      description: 'Dnotas - Pacote Completo de Regularização (Taxa de Adesão)',
+      description: 'Dnotas - Taxa de Adesão (Empresa Principal)',
       externalReference: leadId
     }
 
-    // Adicionar dados do cartão se for pagamento por cartão
     if (billingType === 'CREDIT_CARD' && creditCard && creditCardHolderInfo) {
-      paymentData.creditCard = creditCard
-      paymentData.creditCardHolderInfo = creditCardHolderInfo
+      mainPaymentData.creditCard = creditCard
+      mainPaymentData.creditCardHolderInfo = creditCardHolderInfo
     }
 
-    const payment = await asaasRequest('/payments', {
+    const mainPayment = await asaasRequest('/payments', {
       method: 'POST',
-      body: JSON.stringify(paymentData)
+      body: JSON.stringify(mainPaymentData)
     })
 
-    // 3. Se for PIX, buscar QR Code
+    payments.push(mainPayment)
+    allPaymentIds.push(mainPayment.id)
+
+    // 2. Criar cobranças para empresas adicionais
+    for (let i = 0; i < additionalCnpjs.length; i++) {
+      const cnpj = additionalCnpjs[i]
+      if (!cnpj || cnpj.trim() === '') continue
+
+      // Criar cliente para o CNPJ adicional
+      const additionalCustomerData = {
+        name: `${customer.name} - Empresa ${i + 2}`,
+        email: customer.email,
+        cpfCnpj: cnpj.replace(/\D/g, ''),
+        phone: customer.phone
+      }
+
+      const additionalCustomer = await getOrCreateCustomer(additionalCustomerData)
+
+      const additionalPaymentData: any = {
+        customer: additionalCustomer.id,
+        billingType,
+        value: valuePerCompany,
+        dueDate,
+        description: `Dnotas - Taxa de Adesão (Empresa ${i + 2})`,
+        externalReference: leadId
+      }
+
+      if (billingType === 'CREDIT_CARD' && creditCard && creditCardHolderInfo) {
+        additionalPaymentData.creditCard = creditCard
+        additionalPaymentData.creditCardHolderInfo = creditCardHolderInfo
+      }
+
+      const additionalPayment = await asaasRequest('/payments', {
+        method: 'POST',
+        body: JSON.stringify(additionalPaymentData)
+      })
+
+      payments.push(additionalPayment)
+      allPaymentIds.push(additionalPayment.id)
+    }
+
+    // 3. Se for PIX, buscar QR Code do primeiro pagamento
     let pixQrCode = null
-    if (billingType === 'PIX') {
-      const pixData = await asaasRequest(`/payments/${payment.id}/pixQrCode`)
+    if (billingType === 'PIX' && payments.length > 0) {
+      const pixData = await asaasRequest(`/payments/${payments[0].id}/pixQrCode`)
       pixQrCode = pixData.encodedImage
     }
 
@@ -96,24 +139,29 @@ serve(async (req) => {
     await supabaseClient
       .from('leads')
       .update({
-        payment_status: payment.status,
-        payment_id: payment.id,
+        payment_status: payments[0].status,
+        payment_id: allPaymentIds.join(','), // Guardar todos os IDs separados por vírgula
         payment_method: billingType,
-        asaas_customer_id: asaasCustomer.id,
+        asaas_customer_id: mainCustomer.id,
+        companies_count: companiesCount,
+        additional_cnpjs: additionalCnpjs.filter((c: string) => c && c.trim() !== ''),
+        final_value: valuePerCompany * payments.length,
         updated_at: new Date().toISOString()
       })
       .eq('id', leadId)
 
-    // 5. Retornar resposta
+    // 5. Retornar resposta com todos os pagamentos
     return new Response(
       JSON.stringify({
         success: true,
-        id: payment.id,
-        status: payment.status,
-        invoiceUrl: payment.invoiceUrl,
-        bankSlipUrl: payment.bankSlipUrl,
+        id: payments[0].id,
+        allPaymentIds: allPaymentIds,
+        status: payments[0].status,
+        invoiceUrl: payments[0].invoiceUrl,
+        bankSlipUrl: payments[0].bankSlipUrl,
         pixQrCode: pixQrCode,
-        payment: payment
+        payments: payments,
+        totalPayments: payments.length
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

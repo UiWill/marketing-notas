@@ -167,8 +167,8 @@ export const Checkout = () => {
 
   // Calcular valor final com desconto
   const calculateFinalValue = () => {
-    const baseValue = 525.00
-    const additionalCompaniesValue = (companiesCount - 1) * 375.00 // R$ 375 por empresa adicional
+    const baseValue = 525.00 // Taxa de adesão da 1ª empresa
+    const additionalCompaniesValue = (companiesCount - 1) * 525.00 // R$ 525 (adesão) por empresa adicional
 
     let total = baseValue + additionalCompaniesValue
 
@@ -428,13 +428,13 @@ export const Checkout = () => {
               {[1, 2, 3, 4, 5].map(num => (
                 <option key={num} value={num}>
                   {num} {num === 1 ? 'empresa' : 'empresas'}
-                  {num > 1 && ` (+R$ ${((num - 1) * 375).toFixed(2)})`}
+                  {num > 1 && ` (+R$ ${((num - 1) * 525).toFixed(2)})`}
                 </option>
               ))}
             </select>
             {companiesCount > 1 && (
               <p className="text-sm text-purple-600 mt-2">
-                Valor adicional por empresa: R$ 375,00/mês cada
+                Taxa de adesão por empresa adicional: R$ 525,00
               </p>
             )}
           </div>
@@ -660,12 +660,12 @@ export const Checkout = () => {
             {companiesCount > 1 && (
               <div className="flex justify-between">
                 <span>{companiesCount - 1} Empresa(s) Adicional(is):</span>
-                <span>R$ {((companiesCount - 1) * 375).toFixed(2)}</span>
+                <span>R$ {((companiesCount - 1) * 525).toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm text-white/60 pt-2 border-t border-white/20">
               <span>Subtotal:</span>
-              <span>R$ {(525 + (companiesCount - 1) * 375).toFixed(2)}</span>
+              <span>R$ {(525 + (companiesCount - 1) * 525).toFixed(2)}</span>
             </div>
             {appliedCoupon && (
               <div className="flex justify-between text-green-400">
