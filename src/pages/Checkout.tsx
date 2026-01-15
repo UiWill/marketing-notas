@@ -44,6 +44,17 @@ export const Checkout = () => {
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState('')
 
+  // Dados do cliente quando não há leadId
+  const [customerName, setCustomerName] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
+
+  // Sistema de cupons e múltiplas empresas
+  const [couponCode, setCouponCode] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
+  const [companiesCount, setCompaniesCount] = useState(1)
+  const [additionalCnpjs, setAdditionalCnpjs] = useState<string[]>([''])
+
   useEffect(() => {
     // Permitir acesso ao checkout mesmo sem leadId
     // Se não houver leadId, o usuário preencherá os dados diretamente no checkout
@@ -70,15 +81,17 @@ export const Checkout = () => {
       setLeadData(data)
       setLoading(false)
 
+      const checkoutValue = calculateFinalValue()
+
       // Track InitiateCheckout when checkout page loads with lead data
       fbTrackInitiateCheckout({
-        value: 525,
+        value: checkoutValue,
         currency: 'BRL',
       })
 
       // Track Google Analytics begin_checkout
       gaTrackBeginCheckout({
-        value: 525,
+        value: checkoutValue,
         currency: 'BRL'
       })
     } catch (err) {
@@ -108,33 +121,108 @@ export const Checkout = () => {
     return numbers.replace(/(\d{5})(\d{3})/, '$1-$2')
   }
 
+  const formatPhone = (value: string) => {
+    const numbers = value.replace(/\D/g, '')
+    if (numbers.length <= 10) {
+      return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+    }
+    return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  }
+
+  // Aplicar cupom de desconto
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return
+
+    try {
+      const { data, error } = await supabase
+        .from('coupons')
+        .select('*')
+        .eq('code', couponCode.toUpperCase())
+        .eq('active', true)
+        .single()
+
+      if (error || !data) {
+        setError('Cupom inválido ou expirado')
+        return
+      }
+
+      // Verificar validade
+      if (data.valid_until && new Date(data.valid_until) < new Date()) {
+        setError('Cupom expirado')
+        return
+      }
+
+      // Verificar limite de uso
+      if (data.max_uses && data.used_count >= data.max_uses) {
+        setError('Cupom já atingiu o limite de uso')
+        return
+      }
+
+      setAppliedCoupon(data)
+      setError('')
+    } catch (err) {
+      setError('Erro ao validar cupom')
+    }
+  }
+
+  // Calcular valor final com desconto
+  const calculateFinalValue = () => {
+    const baseValue = 525.00
+    const additionalCompaniesValue = (companiesCount - 1) * 375.00 // R$ 375 por empresa adicional
+
+    let total = baseValue + additionalCompaniesValue
+
+    if (appliedCoupon) {
+      if (appliedCoupon.discount_type === 'percentage') {
+        total = total * (1 - appliedCoupon.discount_value / 100)
+      } else {
+        total = total - appliedCoupon.discount_value
+      }
+    }
+
+    return Math.max(total, 0) // Não permitir valor negativo
+  }
+
   const processPayment = async () => {
     setProcessing(true)
     setError('')
 
+    const finalValue = calculateFinalValue()
+
     // Track AddPaymentInfo when user clicks to process payment
     fbTrackAddPaymentInfo({
-      value: 525,
+      value: finalValue,
       currency: 'BRL',
     })
 
     // Track Google Analytics add_payment_info
     gaTrackAddPaymentInfo({
-      value: 525,
+      value: finalValue,
       currency: 'BRL',
       payment_type: selectedPayment
     })
 
     try {
+      // Validar dados obrigatórios
+      const name = leadData?.name || customerName
+      const email = leadData?.email || customerEmail
+      const phone = leadData?.phone || customerPhone
+
+      if (!name || !email || !phone) {
+        setError('Por favor, preencha todos os campos obrigatórios')
+        setProcessing(false)
+        return
+      }
+
       // Preparar dados do pagamento
-      const valorPagamento = 525.00 // R$ 575,00 - R$ 50,00 de desconto (já inclui primeira mensalidade)
+      const valorPagamento = calculateFinalValue()
 
       const paymentData: PaymentData = {
         customer: {
-          name: leadData.name,
-          email: leadData.email,
+          name,
+          email,
           cpfCnpj: cpfCnpj.replace(/\D/g, ''),
-          phone: leadData.phone
+          phone: phone.replace(/\D/g, '')
         },
         billingType: selectedPayment,
         value: valorPagamento,
@@ -153,11 +241,11 @@ export const Checkout = () => {
           },
           creditCardHolderInfo: {
             name: cardData.holderName,
-            email: leadData.email,
+            email,
             cpfCnpj: cpfCnpj.replace(/\D/g, ''),
             postalCode: postalCode.replace(/\D/g, ''),
             addressNumber: '0',
-            phone: leadData.phone
+            phone: phone.replace(/\D/g, '')
           }
         })
       }
@@ -173,7 +261,10 @@ export const Checkout = () => {
         },
         body: JSON.stringify({
           ...paymentData,
-          leadId: leadId
+          leadId: leadId,
+          couponCode: appliedCoupon?.code,
+          companiesCount,
+          additionalCnpjs: additionalCnpjs.filter(cnpj => cnpj.trim())
         })
       })
 
@@ -273,10 +364,85 @@ export const Checkout = () => {
             </button>
           </div>
 
-          {/* CPF/CNPJ */}
+          {/* Dados do Cliente - mostrar apenas se não houver leadData */}
+          {!leadData && (
+            <div className="space-y-4 mb-6 bg-blue-50 p-6 rounded-xl">
+              <h3 className="font-bold text-lg mb-4">Seus Dados</h3>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nome Completo *
+                </label>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Seu nome completo"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  E-mail *
+                </label>
+                <input
+                  type="email"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="seu@email.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Telefone/WhatsApp *
+                </label>
+                <input
+                  type="text"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(formatPhone(e.target.value))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="(00) 00000-0000"
+                  maxLength={15}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Quantidade de Empresas */}
+          <div className="mb-6 bg-purple-50 p-6 rounded-xl">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Quantas empresas deseja regularizar? *
+            </label>
+            <select
+              value={companiesCount}
+              onChange={(e) => {
+                const count = parseInt(e.target.value)
+                setCompaniesCount(count)
+                setAdditionalCnpjs(Array(count - 1).fill(''))
+              }}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+            >
+              {[1, 2, 3, 4, 5].map(num => (
+                <option key={num} value={num}>
+                  {num} {num === 1 ? 'empresa' : 'empresas'}
+                  {num > 1 && ` (+R$ ${((num - 1) * 375).toFixed(2)})`}
+                </option>
+              ))}
+            </select>
+            {companiesCount > 1 && (
+              <p className="text-sm text-purple-600 mt-2">
+                Valor adicional por empresa: R$ 375,00/mês cada
+              </p>
+            )}
+          </div>
+
+          {/* CPF/CNPJ Principal */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              CPF ou CNPJ *
+              CPF ou CNPJ {companiesCount > 1 ? '(Empresa Principal)' : ''} *
             </label>
             <input
               type="text"
@@ -286,6 +452,79 @@ export const Checkout = () => {
               placeholder="000.000.000-00"
               maxLength={18}
             />
+          </div>
+
+          {/* CNPJs Adicionais */}
+          {companiesCount > 1 && (
+            <div className="mb-6 space-y-4">
+              <h3 className="font-bold text-lg">CNPJs das Empresas Adicionais</h3>
+              {additionalCnpjs.map((cnpj, index) => (
+                <div key={index}>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    CNPJ da Empresa {index + 2}
+                  </label>
+                  <input
+                    type="text"
+                    value={cnpj}
+                    onChange={(e) => {
+                      const newCnpjs = [...additionalCnpjs]
+                      newCnpjs[index] = formatCPFCNPJ(e.target.value)
+                      setAdditionalCnpjs(newCnpjs)
+                    }}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="00.000.000/0000-00"
+                    maxLength={18}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Cupom de Desconto */}
+          <div className="mb-6 bg-green-50 p-6 rounded-xl">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tem um cupom de desconto?
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                placeholder="Digite o código do cupom"
+                disabled={!!appliedCoupon}
+              />
+              <button
+                onClick={applyCoupon}
+                disabled={!couponCode.trim() || !!appliedCoupon}
+                className="px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg font-semibold transition-colors"
+              >
+                {appliedCoupon ? 'Aplicado!' : 'Aplicar'}
+              </button>
+            </div>
+            {appliedCoupon && (
+              <div className="mt-3 p-3 bg-green-100 rounded-lg flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-green-800">
+                    Cupom "{appliedCoupon.code}" aplicado!
+                  </p>
+                  <p className="text-sm text-green-700">
+                    Desconto: {appliedCoupon.discount_type === 'percentage'
+                      ? `${appliedCoupon.discount_value}%`
+                      : `R$ ${appliedCoupon.discount_value.toFixed(2)}`}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setAppliedCoupon(null)
+                    setCouponCode('')
+                  }}
+                  className="text-red-600 hover:text-red-800 font-semibold"
+                >
+                  Remover
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Card Form */}
@@ -415,22 +654,38 @@ export const Checkout = () => {
           <h3 className="font-bold text-lg mb-4">Resumo do Pedido</h3>
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
-              <span>Taxa de Adesão:</span>
-              <span className="line-through opacity-60">R$ 575,00</span>
+              <span>Taxa de Adesão (1ª empresa):</span>
+              <span>R$ 525,00</span>
             </div>
-            <div className="flex justify-between text-green-400">
-              <span>Desconto Especial:</span>
-              <span className="font-bold">- R$ 50,00</span>
+            {companiesCount > 1 && (
+              <div className="flex justify-between">
+                <span>{companiesCount - 1} Empresa(s) Adicional(is):</span>
+                <span>R$ {((companiesCount - 1) * 375).toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-sm text-white/60 pt-2 border-t border-white/20">
+              <span>Subtotal:</span>
+              <span>R$ {(525 + (companiesCount - 1) * 375).toFixed(2)}</span>
             </div>
+            {appliedCoupon && (
+              <div className="flex justify-between text-green-400">
+                <span>Desconto do Cupom "{appliedCoupon.code}":</span>
+                <span className="font-bold">
+                  - {appliedCoupon.discount_type === 'percentage'
+                    ? `${appliedCoupon.discount_value}%`
+                    : `R$ ${appliedCoupon.discount_value.toFixed(2)}`}
+                </span>
+              </div>
+            )}
             <div className="flex justify-between text-sm text-white/60 pt-2">
               <span>Mensalidade após hoje:</span>
-              <span>R$ 375,00/mês</span>
+              <span>R$ {(375 * companiesCount).toFixed(2)}/mês</span>
             </div>
           </div>
           <div className="border-t border-white/20 pt-4">
             <div className="flex justify-between text-xl font-bold">
               <span>Total Hoje:</span>
-              <span className="text-green-400">R$ 525,00</span>
+              <span className="text-green-400">R$ {calculateFinalValue().toFixed(2)}</span>
             </div>
           </div>
         </div>

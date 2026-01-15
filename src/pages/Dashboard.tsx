@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Users, TrendingUp, PlayCircle, Target, Eye, Clock, Phone, Mail, DollarSign, MousePointer, FileCheck, Globe, Lock } from 'lucide-react'
+import { Users, TrendingUp, PlayCircle, Target, Eye, Clock, Phone, Mail, DollarSign, MousePointer, FileCheck, Globe, Lock, Tag } from 'lucide-react'
 import { GoogleAnalyticsSection } from '@/components/GoogleAnalyticsSection'
 import { VideoRetentionChart } from '@/components/VideoRetentionChart'
 import { SectionAnalyticsCard } from '@/components/SectionAnalyticsCard'
 import { ActionFunnelChart } from '@/components/ActionFunnelChart'
 import { VideoDropoffChart } from '@/components/VideoDropoffChart'
+import { CouponManager } from '@/components/CouponManager'
 import type { Lead, AnalyticsData, ConversionFunnel, TrafficSource } from '@/types'
 
 const DASHBOARD_PASSWORD = 'DnotasEli2020*'
@@ -17,6 +18,7 @@ export const Dashboard = () => {
   const [trafficSources, setTrafficSources] = useState<TrafficSource[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
+  const [showCoupons, setShowCoupons] = useState(false)
 
   // Password protection states
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -230,14 +232,33 @@ export const Dashboard = () => {
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard de Marketing - Dnotas</h1>
-          <p className="text-gray-600">Acompanhe o desempenho da sua campanha em tempo real</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Dashboard de Marketing - Dnotas</h1>
+              <p className="text-gray-600">Acompanhe o desempenho da sua campanha em tempo real</p>
+            </div>
+            <button
+              onClick={() => setShowCoupons(!showCoupons)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+                showCoupons
+                  ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                  : 'bg-orange-600 text-white hover:bg-orange-700'
+              }`}
+            >
+              <Tag className="w-5 h-5" />
+              {showCoupons ? 'Ver Dashboard' : 'Gerenciar Cupons'}
+            </button>
+          </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Google Analytics Section */}
-        <GoogleAnalyticsSection />
+        {showCoupons ? (
+          <CouponManager />
+        ) : (
+          <>
+            {/* Google Analytics Section */}
+            <GoogleAnalyticsSection />
 
         {/* Divider */}
         <div className="border-t border-gray-200 my-8"></div>
@@ -598,10 +619,9 @@ export const Dashboard = () => {
             </table>
           </div>
         </div>
-      </div>
 
-      {/* Lead Detail Modal */}
-      {selectedLead && (
+        {/* Lead Detail Modal */}
+        {selectedLead && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div className="flex justify-between items-center mb-4">
@@ -664,6 +684,9 @@ export const Dashboard = () => {
           </div>
         </div>
       )}
+          </>
+        )}
+      </div>
     </div>
   )
 }
