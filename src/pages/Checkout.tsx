@@ -49,11 +49,11 @@ export const Checkout = () => {
   const [customerEmail, setCustomerEmail] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
 
-  // Sistema de cupons e múltiplas empresas
+  // Sistema de cupons
   const [couponCode, setCouponCode] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
-  const [companiesCount, setCompaniesCount] = useState(1)
-  const [additionalCnpjs, setAdditionalCnpjs] = useState<string[]>([''])
+
+  const baseValue = 525.00 // Taxa de adesão
 
   useEffect(() => {
     // Permitir acesso ao checkout mesmo sem leadId
@@ -167,10 +167,7 @@ export const Checkout = () => {
 
   // Calcular valor final com desconto
   const calculateFinalValue = () => {
-    const baseValue = 525.00 // Taxa de adesão da 1ª empresa
-    const additionalCompaniesValue = (companiesCount - 1) * 525.00 // R$ 525 (adesão) por empresa adicional
-
-    let total = baseValue + additionalCompaniesValue
+    let total = baseValue
 
     if (appliedCoupon) {
       if (appliedCoupon.discount_type === 'percentage') {
@@ -262,9 +259,7 @@ export const Checkout = () => {
         body: JSON.stringify({
           ...paymentData,
           leadId: leadId,
-          couponCode: appliedCoupon?.code,
-          companiesCount,
-          additionalCnpjs: additionalCnpjs.filter(cnpj => cnpj.trim())
+          couponCode: appliedCoupon?.code
         })
       })
 
@@ -411,38 +406,10 @@ export const Checkout = () => {
             </div>
           )}
 
-          {/* Quantidade de Empresas */}
-          <div className="mb-6 bg-purple-50 p-6 rounded-xl">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Quantas empresas deseja regularizar? *
-            </label>
-            <select
-              value={companiesCount}
-              onChange={(e) => {
-                const count = parseInt(e.target.value)
-                setCompaniesCount(count)
-                setAdditionalCnpjs(Array(count - 1).fill(''))
-              }}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-            >
-              {[1, 2, 3, 4, 5].map(num => (
-                <option key={num} value={num}>
-                  {num} {num === 1 ? 'empresa' : 'empresas'}
-                  {num > 1 && ` (+R$ ${((num - 1) * 525).toFixed(2)})`}
-                </option>
-              ))}
-            </select>
-            {companiesCount > 1 && (
-              <p className="text-sm text-purple-600 mt-2">
-                Taxa de adesão por empresa adicional: R$ 525,00
-              </p>
-            )}
-          </div>
-
-          {/* CPF/CNPJ Principal */}
+          {/* CPF/CNPJ */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              CPF ou CNPJ {companiesCount > 1 ? '(Empresa Principal)' : ''} *
+              CPF ou CNPJ *
             </label>
             <input
               type="text"
@@ -453,32 +420,6 @@ export const Checkout = () => {
               maxLength={18}
             />
           </div>
-
-          {/* CNPJs Adicionais */}
-          {companiesCount > 1 && (
-            <div className="mb-6 space-y-4">
-              <h3 className="font-bold text-lg">CNPJs das Empresas Adicionais</h3>
-              {additionalCnpjs.map((cnpj, index) => (
-                <div key={index}>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    CNPJ da Empresa {index + 2}
-                  </label>
-                  <input
-                    type="text"
-                    value={cnpj}
-                    onChange={(e) => {
-                      const newCnpjs = [...additionalCnpjs]
-                      newCnpjs[index] = formatCPFCNPJ(e.target.value)
-                      setAdditionalCnpjs(newCnpjs)
-                    }}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="00.000.000/0000-00"
-                    maxLength={18}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
 
           {/* Cupom de Desconto */}
           <div className="mb-6 bg-green-50 p-6 rounded-xl">
@@ -645,7 +586,7 @@ export const Checkout = () => {
           </button>
 
           <p className="text-xs text-gray-500 text-center mt-4">
-            🔒 Pagamento seguro e criptografado
+            Pagamento seguro e criptografado
           </p>
         </div>
 
@@ -654,18 +595,8 @@ export const Checkout = () => {
           <h3 className="font-bold text-lg mb-4">Resumo do Pedido</h3>
           <div className="space-y-2 mb-4">
             <div className="flex justify-between">
-              <span>Taxa de Adesão (1ª empresa):</span>
+              <span>Taxa de Adesão:</span>
               <span>R$ 525,00</span>
-            </div>
-            {companiesCount > 1 && (
-              <div className="flex justify-between">
-                <span>{companiesCount - 1} Empresa(s) Adicional(is):</span>
-                <span>R$ {((companiesCount - 1) * 525).toFixed(2)}</span>
-              </div>
-            )}
-            <div className="flex justify-between text-sm text-white/60 pt-2 border-t border-white/20">
-              <span>Subtotal:</span>
-              <span>R$ {(525 + (companiesCount - 1) * 525).toFixed(2)}</span>
             </div>
             {appliedCoupon && (
               <div className="flex justify-between text-green-400">
@@ -679,7 +610,7 @@ export const Checkout = () => {
             )}
             <div className="flex justify-between text-sm text-white/60 pt-2">
               <span>Mensalidade após hoje:</span>
-              <span>R$ {(375 * companiesCount).toFixed(2)}/mês</span>
+              <span>R$ 375,00/mês</span>
             </div>
           </div>
           <div className="border-t border-white/20 pt-4">
