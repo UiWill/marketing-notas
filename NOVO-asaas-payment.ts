@@ -68,38 +68,16 @@ serve(async (req) => {
       const existingCustomers = await asaasRequest(`/customers?cpfCnpj=${customer.cpfCnpj}`, apiKey)
       if (existingCustomers.data && existingCustomers.data.length > 0) {
         asaasCustomer = existingCustomers.data[0]
-        // Atualizar dados do cliente existente para garantir que nome/email/telefone estejam corretos
-        await asaasRequest(`/customers/${asaasCustomer.id}`, apiKey, {
-          method: 'PUT',
-          body: JSON.stringify({
-            name: customer.name,
-            email: customer.email,
-            phone: customer.phone,
-            mobilePhone: customer.phone
-          })
-        })
       } else {
         asaasCustomer = await asaasRequest('/customers', apiKey, {
           method: 'POST',
-          body: JSON.stringify({
-            name: customer.name,
-            email: customer.email,
-            cpfCnpj: customer.cpfCnpj,
-            phone: customer.phone,
-            mobilePhone: customer.phone
-          })
+          body: JSON.stringify(customer)
         })
       }
     } catch (err) {
       asaasCustomer = await asaasRequest('/customers', apiKey, {
         method: 'POST',
-        body: JSON.stringify({
-          name: customer.name,
-          email: customer.email,
-          cpfCnpj: customer.cpfCnpj,
-          phone: customer.phone,
-          mobilePhone: customer.phone
-        })
+        body: JSON.stringify(customer)
       })
     }
 
@@ -109,7 +87,7 @@ serve(async (req) => {
       billingType,
       value,
       dueDate,
-      description: `Dnotas - Taxa de Adesão - ${customer.name}`,
+      description: 'Dnotas - Pacote Completo de Regularização (Taxa de Adesão)',
       externalReference: leadId
     }
 
@@ -131,25 +109,22 @@ serve(async (req) => {
       pixQrCode = pixData.encodedImage
     }
 
-    // 4. Atualizar lead no banco de dados (se tiver leadId)
-    if (leadId) {
-      const supabaseClient = createClient(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-      )
+    // 4. Atualizar lead no banco de dados
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
 
-      await supabaseClient
-        .from('leads')
-        .update({
-          payment_status: payment.status,
-          payment_id: payment.id,
-          payment_method: billingType,
-          asaas_customer_id: asaasCustomer.id,
-          final_value: value,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', leadId)
-    }
+    await supabaseClient
+      .from('leads')
+      .update({
+        payment_status: payment.status,
+        payment_id: payment.id,
+        payment_method: billingType,
+        asaas_customer_id: asaasCustomer.id,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', leadId)
 
     // 5. Retornar resposta
     return new Response(

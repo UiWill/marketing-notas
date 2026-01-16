@@ -1,5 +1,6 @@
-// Configuração do cliente Asaas
-const ASAAS_API_KEY = '$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjhlMDdlOTZlLTBiOTUtNGFkYS1hNmI4LWNlODFkYzQzNDI0Mjo6JGFhY2hfY2Y2Mjc2MjItZjg4OC00MmZjLThlNmItMWRlMGZkMjAzNmI1'
+// ATENÇÃO: Este cliente não deve ser usado no frontend
+// Use as Edge Functions do Supabase para fazer chamadas ao Asaas
+// A chave da API está armazenada na tabela api_config do Supabase
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3'
 
 interface AsaasCustomer {
@@ -37,8 +38,10 @@ export class AsaasClient {
   private apiKey: string
   private baseUrl: string
 
-  constructor() {
-    this.apiKey = ASAAS_API_KEY
+  constructor(apiKey?: string) {
+    // IMPORTANTE: Não use este cliente no frontend
+    // A chave deve ser passada apenas em ambiente seguro (backend)
+    this.apiKey = apiKey || ''
     this.baseUrl = ASAAS_BASE_URL
   }
 
@@ -136,4 +139,7 @@ export class AsaasClient {
   }
 }
 
-export const asaasClient = new AsaasClient()
+// NOTA: Não exporte uma instância pré-criada
+// Este cliente não deve ser usado no frontend
+// Use as Edge Functions do Supabase (asaas-payment, asaas-get-payment)
+// export const asaasClient = new AsaasClient()
